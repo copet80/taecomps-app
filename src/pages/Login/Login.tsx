@@ -1,11 +1,12 @@
 import React from 'react';
-import { Container, Heading } from '@chakra-ui/react';
 
-export default function App() {
+import { FullScreenContainer } from '../../components';
+
+export default function Login() {
   return (
-    <Container>
-      <Heading>Taecomps</Heading>
-      <Heading size="md">Organised Competitions</Heading>
-    </Container>
+    <FullScreenContainer>
+      <h2>Taecomps</h2>
+      <h4>Organised Competitions </h4>
+    </FullScreenContainer>
   );
 }
