@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './fbinit';
 
 import App from './App';
+import { StoreProvider } from './hooks';
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
@@ -12,7 +13,9 @@ const root = createRoot(rootElement);
 root.render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <StoreProvider>
+        <App />
+      </StoreProvider>
     </BrowserRouter>
   </StrictMode>,
 );
