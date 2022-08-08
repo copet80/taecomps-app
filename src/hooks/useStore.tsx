@@ -5,21 +5,29 @@ import React, {
   PropsWithChildren,
 } from 'react';
 
+import { User } from 'firebase/auth';
+
 type SetRegisterEmailFunc = (email: string) => void;
+type SetCurrentUserFunc = (user: User) => void;
 
 export type StoreReturnType = {
   registerEmail: string;
   setRegisterEmail: SetRegisterEmailFunc;
+  currentUser: User | null;
+  setCurrentUser: SetCurrentUserFunc;
 };
 
 const StoreContext = createContext({ signUpEmail: '' });
 
 function useStoreFn(): StoreReturnType {
   const [registerEmail, setRegisterEmail] = useState('');
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   return {
     registerEmail,
     setRegisterEmail,
+    currentUser,
+    setCurrentUser,
   };
 }
 

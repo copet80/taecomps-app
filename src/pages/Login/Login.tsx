@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useMemo, useState } from 'react';
 
 import {
   Button,
@@ -10,7 +10,12 @@ import {
   Stack,
   TextInput,
 } from '@carbon/react';
-import { getAuth, signInWithEmailAndPassword, User } from 'firebase/auth';
+import {
+  getAuth,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  User,
+} from 'firebase/auth';
 import { object, string } from 'yup';
 
 import './Login.scss';
@@ -18,10 +23,17 @@ import './Login.scss';
 import { FullScreenContainer } from '../../components';
 import { useValidation } from '../../hooks';
 
+enum FormState {
+  LoggingIn,
+  LoginError,
+  SendingResetPassword,
+  ResetPasswordError,
+  ResetPasswordSent,
+}
+
 type Props = {
   onLoggedIn: (user: User) => void;
   onRegisterClick: (email: string) => void;
-  onRecoverPasswordClick: (email: string) => void;
 };
 
 const loginSchema = object({
@@ -37,16 +49,11 @@ const loginSchema = object({
   })),
 });
 
-export default function Login({
-  onLoggedIn,
-  onRegisterClick,
-  onRecoverPasswordClick,
-}: Props) {
+export default function Login({ onLoggedIn, onRegisterClick }: Props) {
   const auth = getAuth();
-  const { clearError, errors, validate, validationProps } =
-    useValidation(loginSchema);
 
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const { clearError, validate, validationProps } = useValidation(loginSchema);
+
   const [email, setEmail] = useState(
     window.localStorage.getItem('email') || '',
   );
@@ -54,7 +61,14 @@ export default function Login({
   const [rememberEmail, setRememberEmail] = useState(
     Boolean(window.localStorage.getItem('rememberEmail')),
   );
-  const [loginError, setLoginError] = useState(false);
+  const [formState, setFormState] = useState<FormState | null>(null);
+
+  const isSubmitting = useMemo(
+    () =>
+      formState === FormState.LoggingIn ||
+      formState === FormState.SendingResetPassword,
+    [formState],
+  );
 
   async function handleLogin() {
     const isValid = await validate({ email, password });
@@ -71,29 +85,103 @@ export default function Login({
       window.localStorage.removeItem('rememberEmail');
     }
 
-    setIsLoggingIn(true);
+    setFormState(FormState.LoggingIn);
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        onLoggedIn(user);
-      })
-      .catch((error) => {
-        setIsLoggingIn(false);
-        setLoginError(true);
-      });
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      onLoggedIn(userCredential.user);
+    } catch (error) {
+      setFormState(FormState.LoginError);
+    }
   }
 
   function handleRegister() {
     onRegisterClick(email);
   }
 
-  function handleRecoverPassword() {
-    onRecoverPasswordClick(email);
+  async function handleResetPassword() {
+    try {
+      setFormState(FormState.SendingResetPassword);
+      await sendPasswordResetEmail(auth, email);
+      setFormState(FormState.ResetPasswordSent);
+    } catch (error) {
+      setFormState(FormState.ResetPasswordError);
+    }
   }
 
-  function clearLoginError() {
-    setLoginError(false);
+  function clearFormState() {
+    setFormState(null);
+  }
+
+  function renderNotifications() {
+    switch (formState) {
+      case FormState.LoginError:
+        return (
+          <InlineNotification
+            kind="error"
+            subtitle={
+              <span>
+                The email address or password that you've entered doesn't match
+                any account.{' '}
+                <Link onClick={handleResetPassword}>
+                  <strong>Reset password</strong>
+                </Link>
+              </span>
+            }
+            hideCloseButton
+            lowContrast={false}
+          />
+        );
+
+      case FormState.SendingResetPassword:
+        return (
+          <InlineNotification
+            kind="info"
+            subtitle={<span>Sending reset password email...</span>}
+            hideCloseButton
+            lowContrast={false}
+          />
+        );
+
+      case FormState.ResetPasswordError:
+        return (
+          <InlineNotification
+            kind="error"
+            subtitle={
+              <span>
+                The email address that you've entered doesn't match any account.{' '}
+                <Link onClick={handleRegister}>
+                  <strong>Create an account</strong>
+                </Link>
+              </span>
+            }
+            hideCloseButton
+            lowContrast={false}
+          />
+        );
+
+      case FormState.ResetPasswordSent:
+        return (
+          <InlineNotification
+            kind="success"
+            subtitle={
+              <span>
+                A reset password email has been sent to <b>{email}</b>. Please
+                follow the instructions in the email to reset your password.
+              </span>
+            }
+            hideCloseButton
+            lowContrast={false}
+          />
+        );
+
+      default:
+        return null;
+    }
   }
 
   return (
@@ -114,22 +202,22 @@ export default function Login({
                     type="text"
                     labelText="Email address"
                     value={email}
-                    disabled={isLoggingIn}
+                    disabled={isSubmitting}
                     {...validationProps('email')}
                     onChange={(event: FormEvent<HTMLInputElement>) => {
                       setEmail(event.currentTarget.value);
                       clearError('email');
-                      clearLoginError();
+                      clearFormState();
                     }}
                   />
                   <Checkbox
                     id="rememberEmail"
                     labelText="Remember email"
                     checked={rememberEmail}
-                    disabled={isLoggingIn}
+                    disabled={isSubmitting}
                     onChange={(event: FormEvent<HTMLInputElement>) => {
                       setRememberEmail(event.currentTarget.checked);
-                      clearLoginError();
+                      clearFormState();
                     }}
                   />
                 </Stack>
@@ -139,31 +227,16 @@ export default function Login({
                   type="password"
                   labelText="Password"
                   value={password}
-                  disabled={isLoggingIn}
+                  disabled={isSubmitting}
                   {...validationProps('password')}
                   onChange={(event: FormEvent<HTMLInputElement>) => {
                     setPassword(event.currentTarget.value);
                     clearError('password');
-                    clearLoginError();
+                    clearFormState();
                   }}
                 />
-                {loginError && (
-                  <InlineNotification
-                    kind="error"
-                    subtitle={
-                      <span>
-                        The email address or password that you've entered
-                        doesn't match any account.{' '}
-                        <Link onClick={handleRecoverPassword}>
-                          <strong>Recover password</strong>
-                        </Link>
-                      </span>
-                    }
-                    hideCloseButton
-                    lowContrast={false}
-                  />
-                )}
-                {isLoggingIn ? (
+                {renderNotifications()}
+                {isSubmitting ? (
                   <ButtonSkeleton />
                 ) : (
                   <Button onClick={handleLogin}>Sign in</Button>

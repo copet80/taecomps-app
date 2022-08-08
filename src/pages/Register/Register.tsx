@@ -16,20 +16,32 @@ import './Register.scss';
 import { FullScreenContainer } from '../../components';
 import { useStore, useValidation } from '../../hooks';
 
+enum FormState {
+  Registering,
+  RegisterError,
+}
+
 type Props = {
   onRegistered: (user: User) => void;
   onLoginClick: () => void;
 };
 
+const PASSWORD_MIN_LENGTH = 8;
+const PASSWORD_MAX_LENGTH = 16;
+
 export default function Register({ onRegistered, onLoginClick }: Props) {
   const { registerEmail } = useStore();
   const auth = getAuth();
 
-  const [isRegistering, setIsRegistering] = useState(false);
   const [email, setEmail] = useState(registerEmail || '');
   const [confirmEmail, setConfirmEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [registerError, setRegisterError] = useState(false);
+  const [formState, setFormState] = useState<FormState | null>(null);
+
+  const isSubmitting = useMemo(
+    () => formState === FormState.Registering,
+    [formState],
+  );
 
   const registerSchema = useMemo(
     () =>
@@ -62,11 +74,17 @@ export default function Register({ onRegistered, onLoginClick }: Props) {
             message:
               'The email address you entered and the confirmation do not match',
           })),
-        password: string().required(() => ({
-          field: 'password',
-          key: 'required',
-          message: 'Please enter your password',
-        })),
+        password: string()
+          .min(PASSWORD_MIN_LENGTH, () => ({
+            field: 'password',
+            key: 'min',
+            message: `Please enter between ${PASSWORD_MIN_LENGTH} and ${PASSWORD_MAX_LENGTH} letters`,
+          }))
+          .max(PASSWORD_MAX_LENGTH, () => ({
+            field: 'password',
+            key: 'max',
+            message: `Please enter between ${PASSWORD_MIN_LENGTH} and ${PASSWORD_MAX_LENGTH} letters`,
+          })),
       }),
     [email],
   );
@@ -85,25 +103,47 @@ export default function Register({ onRegistered, onLoginClick }: Props) {
       return;
     }
 
-    setIsRegistering(true);
+    setFormState(FormState.Registering);
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        onRegistered(user);
-      })
-      .catch((error) => {
-        setIsRegistering(false);
-        setRegisterError(true);
-      });
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      onRegistered(userCredential.user);
+    } catch (error) {
+      setFormState(FormState.RegisterError);
+    }
   }
 
   function handleLogin() {
     onLoginClick();
   }
 
-  function clearRegisterError() {
-    setRegisterError(false);
+  function clearFormState() {
+    setFormState(null);
+  }
+
+  function renderNotifications() {
+    switch (formState) {
+      case FormState.RegisterError:
+        return (
+          <InlineNotification
+            kind="error"
+            subtitle={
+              <span>
+                There is a problem creating your account. Please contact{' '}
+                <a href="mailto:taecomps@gmail.com">taecomps@gmail.com</a>
+              </span>
+            }
+            hideCloseButton
+            lowContrast={false}
+          />
+        );
+      default:
+        return null;
+    }
   }
 
   return (
@@ -122,12 +162,12 @@ export default function Register({ onRegistered, onLoginClick }: Props) {
                   type="text"
                   labelText="Email address"
                   value={email}
-                  disabled={isRegistering}
+                  disabled={isSubmitting}
                   {...validationProps('email')}
                   onChange={(event: FormEvent<HTMLInputElement>) => {
                     setEmail(event.currentTarget.value);
                     clearError('email');
-                    clearRegisterError();
+                    clearFormState();
                   }}
                 />
                 <TextInput
@@ -136,12 +176,12 @@ export default function Register({ onRegistered, onLoginClick }: Props) {
                   type="text"
                   labelText="Confirm email address"
                   value={confirmEmail}
-                  disabled={isRegistering}
+                  disabled={isSubmitting}
                   {...validationProps('confirmEmail')}
                   onChange={(event: FormEvent<HTMLInputElement>) => {
                     setConfirmEmail(event.currentTarget.value);
                     clearError('confirmEmail');
-                    clearRegisterError();
+                    clearFormState();
                   }}
                 />
                 <TextInput
@@ -150,30 +190,17 @@ export default function Register({ onRegistered, onLoginClick }: Props) {
                   type="password"
                   labelText="Password"
                   value={password}
-                  disabled={isRegistering}
+                  helperText={`Between ${PASSWORD_MIN_LENGTH} and ${PASSWORD_MAX_LENGTH} letters`}
+                  disabled={isSubmitting}
                   {...validationProps('password')}
                   onChange={(event: FormEvent<HTMLInputElement>) => {
                     setPassword(event.currentTarget.value);
                     clearError('password');
-                    clearRegisterError();
+                    clearFormState();
                   }}
                 />
-                {registerError && (
-                  <InlineNotification
-                    kind="error"
-                    subtitle={
-                      <span>
-                        There is a problem creating your account. Please contact{' '}
-                        <a href="mailto:taecomps@gmail.com">
-                          taecomps@gmail.com
-                        </a>
-                      </span>
-                    }
-                    hideCloseButton
-                    lowContrast={false}
-                  />
-                )}
-                {isRegistering ? (
+                {renderNotifications()}
+                {isSubmitting ? (
                   <ButtonSkeleton />
                 ) : (
                   <Button onClick={handleRegister}>Create account</Button>

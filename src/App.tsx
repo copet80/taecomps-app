@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 
 import './App.scss';
 
 import { FullScreenSpinner } from './components';
 import { useStore } from './hooks';
 import AppRoutes from './AppRoutes';
+import DashboardPage from './pages/Dashboard';
 import LoginPage from './pages/Login';
 import RegisterPage from './pages/Register';
 
@@ -19,10 +20,9 @@ enum AuthState {
 
 export default function App() {
   let navigate = useNavigate();
+  const { setRegisterEmail, setCurrentUser } = useStore();
 
   const [authState, setAuthState] = useState(AuthState.Loading);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const { setRegisterEmail: setSignUpEmail } = useStore();
 
   useEffect(() => {
     const auth = getAuth();
@@ -41,12 +41,13 @@ export default function App() {
   }
 
   function handleRegisterClick(email: string) {
-    setSignUpEmail(email);
+    setRegisterEmail(email);
     navigate(AppRoutes.Register);
   }
 
-  function handleResetPasswordClick(email: string) {
-    setSignUpEmail(email);
+  function handleRegistered(user: User) {
+    setCurrentUser(user);
+    navigate(AppRoutes.Dashboard);
   }
 
   switch (authState) {
@@ -54,7 +55,15 @@ export default function App() {
       return <FullScreenSpinner />;
 
     case AuthState.LoggedIn:
-      return <FullScreenSpinner />;
+      return (
+        <Routes>
+          <Route path={AppRoutes.Dashboard} element={<DashboardPage />}></Route>
+          <Route
+            path="*"
+            element={<Navigate to={AppRoutes.Dashboard} replace />}
+          />
+        </Routes>
+      );
 
     case AuthState.NotLoggedIn:
     default:
@@ -66,17 +75,17 @@ export default function App() {
               <LoginPage
                 onLoggedIn={setCurrentUser}
                 onRegisterClick={handleRegisterClick}
-                onRecoverPasswordClick={handleResetPasswordClick}
               />
             }></Route>
           <Route
             path={AppRoutes.Register}
             element={
               <RegisterPage
-                onRegistered={setCurrentUser}
+                onRegistered={handleRegistered}
                 onLoginClick={handleLoginClick}
               />
             }></Route>
+          <Route path="*" element={<Navigate to={AppRoutes.Login} replace />} />
         </Routes>
       );
   }

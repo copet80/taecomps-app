@@ -1,4 +1,5 @@
 enum AppRoutes {
+  Dashboard = '/',
   Login = '/',
   Register = '/register',
   ResetPassword = '/resetpassword',
