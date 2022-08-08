@@ -5,10 +5,14 @@ import './FullScreenSpinner.scss';
 
 import FullScreenContainer from '../FullScreenContainer';
 
-export default function FullPageSpinner() {
+type Props = {
+  overlay?: boolean;
+}
+
+export default function FullPageSpinner({ overlay = false }: Props) {
   return (
     <FullScreenContainer center>
-      <Loading />
+      <Loading withOverlay={overlay} />
     </FullScreenContainer>
   );
 }

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 
+import './App.scss';
+
 import { FullScreenSpinner } from './components';
 import LoginPage from './pages/Login';
 
@@ -35,6 +37,6 @@ export default function App() {
 
     case AuthState.NotLoggedIn:
     default:
-      return <LoginPage />;
+      return <LoginPage />
   }
 }
