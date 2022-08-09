@@ -23,14 +23,14 @@ enum FormState {
 }
 
 type Props = {
-  onRegistered: (user: User) => void;
+  onRegisterSuccess: (user: User) => void;
   onLoginClick: () => void;
 };
 
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_MAX_LENGTH = 16;
 
-export default function Register({ onRegistered, onLoginClick }: Props) {
+export default function Register({ onRegisterSuccess, onLoginClick }: Props) {
   const { registerEmail } = useStore();
   const auth = getAuth();
 
@@ -112,7 +112,7 @@ export default function Register({ onRegistered, onLoginClick }: Props) {
         email,
         password,
       );
-      onRegistered(userCredential.user);
+      onRegisterSuccess(userCredential.user);
     } catch (error) {
       setFormState(FormState.RegisterError);
     }

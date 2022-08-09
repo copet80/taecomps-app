@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 
 import { getAuth, onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 
 import './App.scss';
 
-import { FullScreenSpinner } from './components';
+import { FullScreenSpinner, LoggedInWrapper } from './components';
 import { useStore } from './hooks';
 import AppRoutes from './AppRoutes';
-import DashboardPage from './pages/Dashboard';
-import LoginPage from './pages/Login';
-import ProfilePage from './pages/Profile';
-import RegisterPage from './pages/Register';
+
+const BracketPage = lazy(() => import('./pages/Bracket'));
+const DashboardPage = lazy(() => import('./pages/Dashboard'));
+const EntriesPage = lazy(() => import('./pages/Entries'));
+const LoginPage = lazy(() => import('./pages/Login'));
+const ProfilePage = lazy(() => import('./pages/Profile'));
+const RegisterPage = lazy(() => import('./pages/Register'));
 
 enum AuthState {
   Loading,
@@ -41,7 +44,7 @@ export default function App() {
     navigate(AppRoutes.Login);
   }
 
-  function handleLoggedIn(user: User) {
+  function handleLoginSuccess(user: User) {
     setCurrentUser(user);
   }
 
@@ -50,7 +53,7 @@ export default function App() {
     navigate(AppRoutes.Register);
   }
 
-  function handleRegistered(user: User) {
+  function handleRegisterSuccess(user: User) {
     setCurrentUser(user);
     navigate(AppRoutes.Dashboard);
   }
@@ -67,16 +70,26 @@ export default function App() {
 
     case AuthState.LoggedIn:
       return (
-        <Routes>
-          <Route path={AppRoutes.Dashboard} element={<DashboardPage />}></Route>
-          <Route
-            path={AppRoutes.Profile}
-            element={<ProfilePage onLogoutClick={handleLogoutClick} />}></Route>
-          <Route
-            path="*"
-            element={<Navigate to={AppRoutes.Dashboard} replace />}
-          />
-        </Routes>
+        <LoggedInWrapper>
+          <Suspense fallback={<FullScreenSpinner />}>
+            <Routes>
+              <Route
+                path={AppRoutes.Dashboard}
+                element={<DashboardPage />}></Route>
+              <Route path={AppRoutes.Bracket} element={<BracketPage />}></Route>
+              <Route path={AppRoutes.Entries} element={<EntriesPage />}></Route>
+              <Route
+                path={AppRoutes.Profile}
+                element={
+                  <ProfilePage onLogoutClick={handleLogoutClick} />
+                }></Route>
+              <Route
+                path="*"
+                element={<Navigate to={AppRoutes.Dashboard} replace />}
+              />
+            </Routes>
+          </Suspense>
+        </LoggedInWrapper>
       );
 
     case AuthState.NotLoggedIn:
@@ -87,7 +100,7 @@ export default function App() {
             path={AppRoutes.Login}
             element={
               <LoginPage
-                onLoggedIn={handleLoggedIn}
+                onLoginSuccess={handleLoginSuccess}
                 onRegisterClick={handleRegisterClick}
               />
             }></Route>
@@ -95,7 +108,7 @@ export default function App() {
             path={AppRoutes.Register}
             element={
               <RegisterPage
-                onRegistered={handleRegistered}
+                onRegisterSuccess={handleRegisterSuccess}
                 onLoginClick={handleLoginClick}
               />
             }></Route>

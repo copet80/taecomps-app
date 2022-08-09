@@ -6,15 +6,19 @@ import React, {
 } from 'react';
 
 import { User } from 'firebase/auth';
+import { Tournament } from '../types';
 
 type SetRegisterEmailFunc = (email: string) => void;
 type SetCurrentUserFunc = (user: User) => void;
+type SetCurrentTournamentFunc = (tournament: Tournament) => void;
 
 export type StoreReturnType = {
   registerEmail: string;
   setRegisterEmail: SetRegisterEmailFunc;
   currentUser: User | null;
   setCurrentUser: SetCurrentUserFunc;
+  currentTournament: Tournament | null;
+  setCurrentTournament: SetCurrentTournamentFunc;
 };
 
 const StoreContext = createContext({ signUpEmail: '' });
@@ -22,12 +26,17 @@ const StoreContext = createContext({ signUpEmail: '' });
 function useStoreFn(): StoreReturnType {
   const [registerEmail, setRegisterEmail] = useState('');
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentTournament, setCurrentTournament] = useState<Tournament | null>(
+    null,
+  );
 
   return {
     registerEmail,
     setRegisterEmail,
     currentUser,
     setCurrentUser,
+    currentTournament,
+    setCurrentTournament,
   };
 }
 

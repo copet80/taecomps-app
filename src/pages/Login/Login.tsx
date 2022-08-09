@@ -33,7 +33,7 @@ enum FormState {
 }
 
 type Props = {
-  onLoggedIn: (user: User) => void;
+  onLoginSuccess: (user: User) => void;
   onRegisterClick: (email: string) => void;
 };
 
@@ -50,7 +50,7 @@ const loginSchema = object({
   })),
 });
 
-export default function Login({ onLoggedIn, onRegisterClick }: Props) {
+export default function Login({ onLoginSuccess, onRegisterClick }: Props) {
   const auth = getAuth();
 
   const { clearError, validate, validationProps } = useValidation(loginSchema);
@@ -94,7 +94,7 @@ export default function Login({ onLoggedIn, onRegisterClick }: Props) {
         email,
         password,
       );
-      onLoggedIn(userCredential.user);
+      onLoginSuccess(userCredential.user);
     } catch (error) {
       setFormState(FormState.LoginError);
     }

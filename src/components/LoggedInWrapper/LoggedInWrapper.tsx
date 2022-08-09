@@ -23,22 +23,25 @@ import {
   Switcher as SwitcherIcon,
   UserAvatar as UserIcon,
 } from '@carbon/icons-react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import './LoggedInWrapper.scss';
 
 import AppRoutes from '../../AppRoutes';
+import { useApi } from '../../hooks';
+
+type Props = {};
 
 export default function LoggedInWrapper({
   children,
-}: PropsWithChildren<unknown>) {
+}: PropsWithChildren<Props>) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isTournamentSwitcherActive, setIsTournamentSwitcherActive] =
     useState(false);
+  const { tournaments } = useApi();
 
-  function handleTournamentSwitcherClick() {
-    setIsTournamentSwitcherActive(!isTournamentSwitcherActive);
-  }
+  function handleTournamentSwitcherClick() {}
 
   function handleProfileClick() {
     navigate(AppRoutes.Profile);
@@ -58,11 +61,18 @@ export default function LoggedInWrapper({
         </HeaderName>
         <HeaderNavigation aria-label="Taecomps">
           <HeaderMenuItem
-            isCurrentPage
+            isCurrentPage={location.pathname === AppRoutes.Dashboard}
+            onClick={() => navigate(AppRoutes.Dashboard)}>
+            Dashboard
+          </HeaderMenuItem>
+          <HeaderMenuItem
+            isCurrentPage={location.pathname === AppRoutes.Entries}
             onClick={() => navigate(AppRoutes.Entries)}>
             Entries
           </HeaderMenuItem>
-          <HeaderMenuItem onClick={() => navigate(AppRoutes.Bracket)}>
+          <HeaderMenuItem
+            isCurrentPage={location.pathname === AppRoutes.Bracket}
+            onClick={() => navigate(AppRoutes.Bracket)}>
             Bracket
           </HeaderMenuItem>
         </HeaderNavigation>
@@ -79,22 +89,6 @@ export default function LoggedInWrapper({
             tooltipAlignment="end">
             <SwitcherIcon size={20} />
           </HeaderGlobalAction>
-          <HeaderPanel
-            aria-label="Header Panel"
-            expanded={isTournamentSwitcherActive}>
-            <Switcher aria-label="Switcher Container">
-              <SwitcherItem isSelected aria-label="Link 1" href="#">
-                Gold Coast Open
-              </SwitcherItem>
-              <SwitcherDivider />
-              <SwitcherItem href="#" aria-label="Link 2">
-                NSW State Championships
-              </SwitcherItem>
-              <SwitcherItem href="#" aria-label="Link 3">
-                Melbourne Nationals Selections
-              </SwitcherItem>
-            </Switcher>
-          </HeaderPanel>
         </HeaderGlobalBar>
         <SideNav
           aria-label="Side navigation"
@@ -103,24 +97,20 @@ export default function LoggedInWrapper({
           <SideNavItems>
             <HeaderSideNavItems>
               <HeaderMenuItem
-                isCurrentPage
+                isCurrentPage={location.pathname === AppRoutes.Dashboard}
+                onClick={() => navigate(AppRoutes.Dashboard)}>
+                Dashboard
+              </HeaderMenuItem>
+              <HeaderMenuItem
+                isCurrentPage={location.pathname === AppRoutes.Entries}
                 onClick={() => navigate(AppRoutes.Entries)}>
                 Entries
               </HeaderMenuItem>
-              <HeaderMenuItem onClick={() => navigate(AppRoutes.Bracket)}>
+              <HeaderMenuItem
+                isCurrentPage={location.pathname === AppRoutes.Bracket}
+                onClick={() => navigate(AppRoutes.Bracket)}>
                 Bracket
               </HeaderMenuItem>
-              <HeaderMenu
-                aria-label="Switch tournament"
-                menuLinkName="Switch tournament">
-                <HeaderMenuItem href="#">Gold Coast Open</HeaderMenuItem>
-                <HeaderMenuItem href="#">
-                  NSW State Championships
-                </HeaderMenuItem>
-                <HeaderMenuItem href="#">
-                  Melbourne Nationals Selections
-                </HeaderMenuItem>
-              </HeaderMenu>
             </HeaderSideNavItems>
           </SideNavItems>
         </SideNav>
