@@ -205,8 +205,8 @@ export default function Login({ onLoginSuccess, onRegisterClick }: Props) {
                 <Stack gap={6}>
                   <Stack gap={3}>
                     <TextInput
-                      required
                       data-modal-primary-focus
+                      required
                       id="email"
                       type="text"
                       labelText="Email address"

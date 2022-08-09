@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 import cx from 'classnames';
 
@@ -10,7 +10,7 @@ type Props = {
   center: boolean;
 };
 
-export default function FullScreenContainer({
+function FullScreenContainer({
   center,
   className,
   children,
@@ -21,3 +21,5 @@ export default function FullScreenContainer({
     </div>
   );
 }
+
+export default memo(FullScreenContainer);

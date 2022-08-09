@@ -7,4 +7,9 @@
   .cds--header__submenu .cds--header__menu .cds--header__menu-item {
     padding-left: 1rem !important;
   }
+
+  .switchTournamentMenu > .cds--header__menu {
+    max-width: var(--maxwidth-container-small);
+    width: max-content !important;
+  }
 }

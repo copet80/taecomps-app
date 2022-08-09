@@ -173,6 +173,7 @@ export default function Register({ onRegisterSuccess, onLoginClick }: Props) {
               <Form>
                 <Stack gap={6}>
                   <TextInput
+                    data-modal-primary-focus
                     required
                     id="email"
                     type="text"

@@ -8,6 +8,7 @@
   ],
   "main": "src/index.js",
   "dependencies": {
+    "@carbon/colors": "^11.4.0",
     "@carbon/icons-react": "^11.7.0",
     "@carbon/react": "^1.8.0",
     "classnames": "^2.3.1",
@@ -17,6 +18,7 @@
     "react-dom": "18.0.0",
     "react-router-dom": "6",
     "react-scripts": "^5.0.1",
+    "react-svg": "^15.1.5",
     "sass": "^1.54.3",
     "uuid": "^8.3.2",
     "yup": "^0.32.11"

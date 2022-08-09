@@ -3,7 +3,7 @@ import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 
-import './App.scss';
+import './styles/App.scss';
 
 import { FullScreenSpinner, LoggedInWrapper } from './components';
 import { useStore } from './hooks';
@@ -13,6 +13,7 @@ const BracketPage = lazy(() => import('./pages/Bracket'));
 const DashboardPage = lazy(() => import('./pages/Dashboard'));
 const EntriesPage = lazy(() => import('./pages/Entries'));
 const LoginPage = lazy(() => import('./pages/Login'));
+const NotFoundPage = lazy(() => import('./pages/NotFound'));
 const ProfilePage = lazy(() => import('./pages/Profile'));
 const RegisterPage = lazy(() => import('./pages/Register'));
 const TournamentDetailsPage = lazy(() => import('./pages/TournamentDetails'));
@@ -26,7 +27,7 @@ enum AuthState {
 export default function App() {
   const auth = getAuth();
   const navigate = useNavigate();
-  const { setRegisterEmail, setCurrentUser } = useStore();
+  const { setRegisterEmail, setCurrentUser, currentTournament } = useStore();
 
   const [authState, setAuthState] = useState(AuthState.Loading);
 
@@ -40,6 +41,19 @@ export default function App() {
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (
+      !currentTournament &&
+      [
+        AppRoutes.Bracket,
+        AppRoutes.Entries,
+        AppRoutes.TournamentDetails,
+      ].includes(location.pathname as AppRoutes)
+    ) {
+      navigate(AppRoutes.Dashboard, { replace: true });
+    }
+  }, [currentTournament]);
 
   function handleLoginClick() {
     navigate(AppRoutes.Login);
@@ -74,23 +88,18 @@ export default function App() {
         <LoggedInWrapper>
           <Suspense fallback={<FullScreenSpinner />}>
             <Routes>
-              <Route
-                path={AppRoutes.Dashboard}
-                element={<DashboardPage />}></Route>
-              <Route path={AppRoutes.Bracket} element={<BracketPage />}></Route>
-              <Route path={AppRoutes.Entries} element={<EntriesPage />}></Route>
+              <Route path={AppRoutes.Dashboard} element={<DashboardPage />} />
+              <Route path={AppRoutes.Bracket} element={<BracketPage />} />
+              <Route path={AppRoutes.Entries} element={<EntriesPage />} />
               <Route
                 path={AppRoutes.Profile}
-                element={
-                  <ProfilePage onLogoutClick={handleLogoutClick} />
-                }></Route>
+                element={<ProfilePage onLogoutClick={handleLogoutClick} />}
+              />
               <Route
                 path={AppRoutes.TournamentDetails}
-                element={<TournamentDetailsPage />}></Route>
-              <Route
-                path="*"
-                element={<Navigate to={AppRoutes.Dashboard} replace />}
+                element={<TournamentDetailsPage />}
               />
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>
         </LoggedInWrapper>
@@ -107,7 +116,8 @@ export default function App() {
                 onLoginSuccess={handleLoginSuccess}
                 onRegisterClick={handleRegisterClick}
               />
-            }></Route>
+            }
+          />
           <Route
             path={AppRoutes.Register}
             element={
@@ -115,7 +125,8 @@ export default function App() {
                 onRegisterSuccess={handleRegisterSuccess}
                 onLoginClick={handleLoginClick}
               />
-            }></Route>
+            }
+          />
           <Route path="*" element={<Navigate to={AppRoutes.Login} replace />} />
         </Routes>
       );

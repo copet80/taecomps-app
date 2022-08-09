@@ -43,3 +43,5 @@ export type UpdateTournamentFn = (
   tournament: Tournament,
 ) => Promise<Tournament>;
 export type ListTournamentsFn = () => Unsubscribe;
+export type ListRecentTournamentsFn = () => Tournament[];
+export type AddRecentTournamentFn = (tournament: Tournament) => Tournament[];

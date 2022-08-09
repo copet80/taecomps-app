@@ -1,4 +1,10 @@
-import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import React, {
+  memo,
+  PropsWithChildren,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import {
   Header,
@@ -29,56 +35,72 @@ import { useApi, useStore } from '../../hooks';
 import TournamentSwitcher from '../TournamentSwitcher';
 import { Tournament } from '../../types';
 
-export default function LoggedInWrapper({
-  children,
-}: PropsWithChildren<unknown>) {
+function LoggedInWrapper({ children }: PropsWithChildren<unknown>) {
   const navigate = useNavigate();
   const location = useLocation();
   const [isTournamentSwitcherActive, setIsTournamentSwitcherActive] =
     useState(false);
   const { currentTournament, setCurrentTournament } = useStore();
-  const { tournaments, listTournaments, createTournament } = useApi();
+  const {
+    tournaments,
+    listTournaments,
+    createTournament,
+    listRecentTournaments,
+  } = useApi();
 
-  const tournamentOptions = useMemo(
-    () => (
-      <HeaderMenu aria-label="Gold Coast Open" menuLinkName="Gold Coast Open">
-        <HeaderMenuItem href="#">NSW State Championship</HeaderMenuItem>
-        <HeaderMenuItem href="#">Melbourne National Selections</HeaderMenuItem>
+  const tournamentOptions = useMemo(() => {
+    const currentTournamentName = currentTournament
+      ? currentTournament.name
+      : 'Select tournament';
+    const recentTournaments = listRecentTournaments();
+    return (
+      <HeaderMenu
+        aria-label={currentTournamentName}
+        className="switchTournamentMenu"
+        menuLinkName={currentTournamentName}>
+        {recentTournaments.map((t) => (
+          <HeaderMenuItem
+            key={t.id}
+            isCurrentPage={currentTournament?.id === t.id}
+            onClick={() => switchTournament(t)}>
+            {t.name}
+          </HeaderMenuItem>
+        ))}
         <SideNavDivider />
         <HeaderMenuItem onClick={handleTournamentSwitcherClick}>
           Manage tournaments
         </HeaderMenuItem>
       </HeaderMenu>
-    ),
-    [],
-  );
+    );
+  }, [currentTournament, listRecentTournaments]);
 
   const tournamentSubOptions = useMemo(
-    () => (
-      <>
-        <HeaderMenuItem
-          isCurrentPage={location.pathname === AppRoutes.Dashboard}
-          onClick={() => navigate(AppRoutes.Dashboard)}>
-          Dashboard
-        </HeaderMenuItem>
-        <HeaderMenuItem
-          isCurrentPage={location.pathname === AppRoutes.Entries}
-          onClick={() => navigate(AppRoutes.Entries)}>
-          Entries
-        </HeaderMenuItem>
-        <HeaderMenuItem
-          isCurrentPage={location.pathname === AppRoutes.Bracket}
-          onClick={() => navigate(AppRoutes.Bracket)}>
-          Bracket
-        </HeaderMenuItem>
-        <HeaderMenuItem
-          isCurrentPage={location.pathname === AppRoutes.TournamentDetails}
-          onClick={() => navigate(AppRoutes.TournamentDetails)}>
-          Tournament Details
-        </HeaderMenuItem>
-      </>
-    ),
-    [location],
+    () =>
+      currentTournament ? (
+        <>
+          <HeaderMenuItem
+            isCurrentPage={location.pathname === AppRoutes.Dashboard}
+            onClick={() => navigate(AppRoutes.Dashboard)}>
+            Dashboard
+          </HeaderMenuItem>
+          <HeaderMenuItem
+            isCurrentPage={location.pathname === AppRoutes.Entries}
+            onClick={() => navigate(AppRoutes.Entries)}>
+            Entries
+          </HeaderMenuItem>
+          <HeaderMenuItem
+            isCurrentPage={location.pathname === AppRoutes.Bracket}
+            onClick={() => navigate(AppRoutes.Bracket)}>
+            Bracket
+          </HeaderMenuItem>
+          <HeaderMenuItem
+            isCurrentPage={location.pathname === AppRoutes.TournamentDetails}
+            onClick={() => navigate(AppRoutes.TournamentDetails)}>
+            Tournament Details
+          </HeaderMenuItem>
+        </>
+      ) : null,
+    [location, currentTournament],
   );
 
   useEffect(() => {
@@ -172,3 +194,5 @@ export default function LoggedInWrapper({
     </div>
   );
 }
+
+export default memo(LoggedInWrapper);

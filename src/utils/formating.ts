@@ -1,11 +1,11 @@
-import { DateTime } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 
 export function formatTournamentDate(
   startDate?: string,
   endDate?: string,
-): string {
+): string | null {
   if (!startDate && !endDate) {
-    return 'Date unknown';
+    return null;
   }
 
   if (startDate && endDate) {
@@ -44,4 +44,12 @@ function formatTournamentEndDate(endDate: string): string {
   return `Ends on ${DateTime.fromISO(endDate).toLocaleString(
     DateTime.DATE_MED_WITH_WEEKDAY,
   )}`;
+}
+
+export function formatDate(date: string): string {
+  return DateTime.fromISO(date).toLocaleString(DateTime.DATE_SHORT);
+}
+
+export function formatDateTime(date: string): string {
+  return DateTime.fromISO(date).toLocaleString(DateTime.DATETIME_SHORT);
 }

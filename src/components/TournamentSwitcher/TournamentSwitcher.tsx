@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useMemo, useState } from 'react';
+import React, { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   ClickableTile,
@@ -21,7 +21,8 @@ import {
   SwitchTournamentFn,
   CreateTournamentFn,
 } from '../../types';
-import { formatTournamentDate } from '../../utils';
+import TournamentTile from './TournamentTile';
+import { sortTournamentByName } from '../../utils';
 
 enum FormState {
   Switching,
@@ -52,7 +53,7 @@ const tournamentSchema = object({
 export default function TournamentSwitcher({
   isVisible,
   currentTournament,
-  tournaments,
+  tournaments: rawTournaments,
   createCallback,
   switchCallback,
   onCreateSuccess,
@@ -61,12 +62,15 @@ export default function TournamentSwitcher({
 }: Props) {
   const { clearError, validate, validationProps } =
     useValidation(tournamentSchema);
-  const [selectedTournament, setSelectedTournament] = useState<
-    Tournament | undefined
-  >(currentTournament);
+  const tournamentNameInputRef = useRef<HTMLInputElement>(null);
   const [formState, setFormState] = useState<FormState | undefined>(undefined);
   const [createMode, setCreateMode] = useState(false);
   const [tournamentName, setTournamentName] = useState('');
+
+  const tournaments = useMemo(
+    () => rawTournaments.sort(sortTournamentByName),
+    [rawTournaments],
+  );
 
   const isCreating = useMemo(
     () => formState === FormState.Creating,
@@ -84,18 +88,23 @@ export default function TournamentSwitcher({
     }
   }, [isVisible]);
 
+  useEffect(() => {
+    if (createMode) {
+      tournamentNameInputRef.current?.focus();
+    }
+  }, [createMode]);
+
   function clearFormState() {
     setFormState(undefined);
   }
 
-  async function handleSwitch() {
-    if (!selectedTournament) {
-      return;
-    }
+  async function handleSwitch(tournament: Tournament) {
+    setFormState(FormState.Switching);
 
     try {
-      await switchCallback(selectedTournament);
-      onSwitchSuccess(selectedTournament);
+      await switchCallback(tournament);
+      onSwitchSuccess(tournament);
+      clearFormState();
     } catch (error) {
       setFormState(FormState.SwitchError);
     }
@@ -112,8 +121,8 @@ export default function TournamentSwitcher({
 
     try {
       const newTournament = await createCallback(tournamentName);
-      console.log(newTournament);
       onCreateSuccess(newTournament);
+      clearFormState();
     } catch (error) {
       setFormState(FormState.CreateError);
     }
@@ -137,27 +146,17 @@ export default function TournamentSwitcher({
       <div className="tilesContainer">
         <ClickableTile value="new" onClick={handleNewTournamentClick}>
           <div className="tile tile__new">
-            <Stack gap={3}>
-              <AddIcon />
-              <h4>Create new tournament</h4>
-            </Stack>
+            <AddIcon size={48} />
+            <h5>Create new tournament</h5>
           </div>
         </ClickableTile>
         {tournaments.map((tournament) => (
-          <ClickableTile value="1" key={tournament.id}>
-            <div className="tile">
-              <Stack gap={3}>
-                <h4>{tournament.name}</h4>
-                <div className="tournamentDate">
-                  {formatTournamentDate(
-                    tournament.startDate,
-                    tournament.endDate,
-                  )}
-                </div>
-                <p>{tournament.description}</p>
-              </Stack>
-            </div>
-          </ClickableTile>
+          <TournamentTile
+            key={tournament.id}
+            selected={currentTournament?.id === tournament.id}
+            tournament={tournament}
+            onClick={handleSwitch}
+          />
         ))}
       </div>
     );
@@ -189,6 +188,7 @@ export default function TournamentSwitcher({
       <Stack gap={6}>
         <Form>
           <TextInput
+            ref={tournamentNameInputRef}
             required
             id="tournamentName"
             type="text"

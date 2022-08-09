@@ -8,17 +8,17 @@ import React, {
 import { User } from 'firebase/auth';
 import { Tournament } from '../types';
 
-type SetRegisterEmailFunc = (email: string) => void;
-type SetCurrentUserFunc = (user: User) => void;
-type SetCurrentTournamentFunc = (tournament: Tournament) => void;
+type SetRegisterEmailFn = (email: string) => void;
+type SetCurrentUserFn = (user: User) => void;
+type SetCurrentTournamentFn = (tournament: Tournament) => void;
 
 export type StoreReturnType = {
   registerEmail: string;
-  setRegisterEmail: SetRegisterEmailFunc;
+  setRegisterEmail: SetRegisterEmailFn;
   currentUser: User | undefined;
-  setCurrentUser: SetCurrentUserFunc;
+  setCurrentUser: SetCurrentUserFn;
   currentTournament: Tournament | undefined;
-  setCurrentTournament: SetCurrentTournamentFunc;
+  setCurrentTournament: SetCurrentTournamentFn;
 };
 
 const StoreContext = createContext({ signUpEmail: '' });
