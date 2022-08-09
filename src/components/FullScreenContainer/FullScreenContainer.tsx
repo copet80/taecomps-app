@@ -4,8 +4,20 @@ import cx from 'classnames';
 
 import './FullScreenContainer.scss';
 
-export default function FullScreenContainer({ center, children }: any) {
+import { PropsWithClassName } from '../types';
+
+type Props = {
+  center: boolean;
+};
+
+export default function FullScreenContainer({
+  center,
+  className,
+  children,
+}: PropsWithClassName<Props>) {
   return (
-    <div className={cx('FullScreenContainer', { center })}>{children}</div>
+    <div className={cx('FullScreenContainer', className, { center })}>
+      {children}
+    </div>
   );
 }

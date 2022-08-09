@@ -1,4 +1,8 @@
 .LoginContainer {
-  max-width: 450px;
+  max-width: var(--maxwidth-container-small);
   width: 100%;
+
+  .cds--modal-close {
+    display: none;
+  }
 }

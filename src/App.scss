@@ -1,5 +1,7 @@
 @use 'node_modules/@carbon/styles/css/styles.min.css';
 
+@import './AppTokens.scss';
+
 html,
 body,
 #root {
@@ -12,4 +14,10 @@ body,
 
 a {
   cursor: pointer;
+}
+
+.fullScreenBackground {
+  background: white url('./assets/img/taecomp-bg-blur.webp') center center
+    no-repeat;
+  background-size: cover;
 }

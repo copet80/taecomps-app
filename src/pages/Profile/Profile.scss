@@ -1,0 +1,17 @@
+.ProfileContainer {
+  max-width: var(--maxwidth-container-normal);
+  height: 100%;
+  margin: 0 auto;
+  padding: 5rem 3rem 3rem 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  section {
+    width: 100%;
+
+    &.ProfileContainer_hero {
+      text-align: center;
+    }
+  }
+}

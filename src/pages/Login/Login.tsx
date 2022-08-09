@@ -4,6 +4,7 @@ import {
   Button,
   ButtonSkeleton,
   Checkbox,
+  Modal,
   Form,
   InlineNotification,
   Link,
@@ -133,7 +134,6 @@ export default function Login({ onLoggedIn, onRegisterClick }: Props) {
               </span>
             }
             hideCloseButton
-            lowContrast={false}
           />
         );
 
@@ -143,7 +143,6 @@ export default function Login({ onLoggedIn, onRegisterClick }: Props) {
             kind="info"
             subtitle={<span>Sending reset password email...</span>}
             hideCloseButton
-            lowContrast={false}
           />
         );
 
@@ -160,7 +159,6 @@ export default function Login({ onLoggedIn, onRegisterClick }: Props) {
               </span>
             }
             hideCloseButton
-            lowContrast={false}
           />
         );
 
@@ -175,7 +173,6 @@ export default function Login({ onLoggedIn, onRegisterClick }: Props) {
               </span>
             }
             hideCloseButton
-            lowContrast={false}
           />
         );
 
@@ -185,70 +182,74 @@ export default function Login({ onLoggedIn, onRegisterClick }: Props) {
   }
 
   return (
-    <FullScreenContainer center>
+    <FullScreenContainer center className="fullScreenBackground">
       <div className="LoginContainer">
-        <Stack gap={6}>
-          <header>
-            <h2>Sign in to Taecomps</h2>
-            <h5>Organised Taekwondo Competitions</h5>
-          </header>
-          <main>
-            <Form>
-              <Stack gap={6}>
-                <Stack gap={3}>
+        <Modal
+          open
+          primaryButtonText="Sign in"
+          preventCloseOnClickOutside
+          primaryButtonDisabled={isSubmitting}
+          onRequestSubmit={handleLogin}>
+          <Stack gap={6}>
+            <header>
+              <Stack gap={3}>
+                <h2>Sign in to Taecomps</h2>
+                <p>
+                  Don't have an account?{' '}
+                  <a onClick={handleRegister}>Create an account</a>
+                </p>
+              </Stack>
+            </header>
+            <main>
+              <Form>
+                <Stack gap={6}>
+                  <Stack gap={3}>
+                    <TextInput
+                      required
+                      data-modal-primary-focus
+                      id="email"
+                      type="text"
+                      labelText="Email address"
+                      value={email}
+                      disabled={isSubmitting}
+                      {...validationProps('email')}
+                      onChange={(event: FormEvent<HTMLInputElement>) => {
+                        setEmail(event.currentTarget.value);
+                        clearError('email');
+                        clearFormState();
+                      }}
+                    />
+                    <Checkbox
+                      id="rememberEmail"
+                      labelText="Remember email"
+                      checked={rememberEmail}
+                      disabled={isSubmitting}
+                      onChange={(event: FormEvent<HTMLInputElement>) => {
+                        setRememberEmail(event.currentTarget.checked);
+                        clearFormState();
+                      }}
+                    />
+                  </Stack>
                   <TextInput
                     required
-                    id="email"
-                    type="text"
-                    labelText="Email address"
-                    value={email}
+                    id="password"
+                    type="password"
+                    labelText="Password"
+                    value={password}
                     disabled={isSubmitting}
-                    {...validationProps('email')}
+                    {...validationProps('password')}
                     onChange={(event: FormEvent<HTMLInputElement>) => {
-                      setEmail(event.currentTarget.value);
-                      clearError('email');
+                      setPassword(event.currentTarget.value);
+                      clearError('password');
                       clearFormState();
                     }}
                   />
-                  <Checkbox
-                    id="rememberEmail"
-                    labelText="Remember email"
-                    checked={rememberEmail}
-                    disabled={isSubmitting}
-                    onChange={(event: FormEvent<HTMLInputElement>) => {
-                      setRememberEmail(event.currentTarget.checked);
-                      clearFormState();
-                    }}
-                  />
+                  {renderNotifications()}
                 </Stack>
-                <TextInput
-                  required
-                  id="password"
-                  type="password"
-                  labelText="Password"
-                  value={password}
-                  disabled={isSubmitting}
-                  {...validationProps('password')}
-                  onChange={(event: FormEvent<HTMLInputElement>) => {
-                    setPassword(event.currentTarget.value);
-                    clearError('password');
-                    clearFormState();
-                  }}
-                />
-                {renderNotifications()}
-                {isSubmitting ? (
-                  <ButtonSkeleton />
-                ) : (
-                  <Button onClick={handleLogin}>Sign in</Button>
-                )}
-                <div>
-                  Haven't got an account yet?{' '}
-                  <a onClick={handleRegister}>Sign up now!</a>
-                </div>
-              </Stack>
-            </Form>
-          </main>
-        </Stack>
+              </Form>
+            </main>
+          </Stack>
+        </Modal>
       </div>
     </FullScreenContainer>
   );

@@ -5,6 +5,7 @@ import {
   ButtonSkeleton,
   Form,
   InlineNotification,
+  Modal,
   Stack,
   TextInput,
 } from '@carbon/react';
@@ -117,7 +118,7 @@ export default function Register({ onRegistered, onLoginClick }: Props) {
     }
   }
 
-  function handleLogin() {
+  function handleLoginClick() {
     onLoginClick();
   }
 
@@ -147,71 +148,79 @@ export default function Register({ onRegistered, onLoginClick }: Props) {
   }
 
   return (
-    <FullScreenContainer center>
+    <FullScreenContainer center className="fullScreenBackground">
       <div className="RegisterContainer">
-        <Stack gap={6}>
-          <header>
-            <h2>Create a Taecomps account</h2>
-          </header>
-          <main>
-            <Form>
-              <Stack gap={6}>
-                <TextInput
-                  required
-                  id="email"
-                  type="text"
-                  labelText="Email address"
-                  value={email}
-                  disabled={isSubmitting}
-                  {...validationProps('email')}
-                  onChange={(event: FormEvent<HTMLInputElement>) => {
-                    setEmail(event.currentTarget.value);
-                    clearError('email');
-                    clearFormState();
-                  }}
-                />
-                <TextInput
-                  required
-                  id="confirmEmail"
-                  type="text"
-                  labelText="Confirm email address"
-                  value={confirmEmail}
-                  disabled={isSubmitting}
-                  {...validationProps('confirmEmail')}
-                  onChange={(event: FormEvent<HTMLInputElement>) => {
-                    setConfirmEmail(event.currentTarget.value);
-                    clearError('confirmEmail');
-                    clearFormState();
-                  }}
-                />
-                <TextInput
-                  required
-                  id="password"
-                  type="password"
-                  labelText="Password"
-                  value={password}
-                  helperText={`Between ${PASSWORD_MIN_LENGTH} and ${PASSWORD_MAX_LENGTH} letters`}
-                  disabled={isSubmitting}
-                  {...validationProps('password')}
-                  onChange={(event: FormEvent<HTMLInputElement>) => {
-                    setPassword(event.currentTarget.value);
-                    clearError('password');
-                    clearFormState();
-                  }}
-                />
-                {renderNotifications()}
-                {isSubmitting ? (
-                  <ButtonSkeleton />
-                ) : (
-                  <Button onClick={handleRegister}>Create account</Button>
-                )}
-                <div>
-                  Already have an account? <a onClick={handleLogin}>Sign in!</a>
-                </div>
+        <Modal
+          open
+          primaryButtonText="Create account"
+          secondaryButtonText="Back to sign in"
+          preventCloseOnClickOutside
+          primaryButtonDisabled={isSubmitting}
+          onRequestSubmit={handleRegister}
+          onRequestClose={handleLoginClick}
+          onSecondarySubmit={handleLoginClick}>
+          <Stack gap={6}>
+            <header>
+              <Stack gap={3}>
+                <h2>Create a Taecomps account</h2>
+                <p>
+                  Already have an account?{' '}
+                  <a onClick={handleLoginClick}>Sign in with your account</a>
+                </p>
               </Stack>
-            </Form>
-          </main>
-        </Stack>
+            </header>
+            <main>
+              <Form>
+                <Stack gap={6}>
+                  <TextInput
+                    required
+                    id="email"
+                    type="text"
+                    labelText="Email address"
+                    value={email}
+                    disabled={isSubmitting}
+                    {...validationProps('email')}
+                    onChange={(event: FormEvent<HTMLInputElement>) => {
+                      setEmail(event.currentTarget.value);
+                      clearError('email');
+                      clearFormState();
+                    }}
+                  />
+                  <TextInput
+                    required
+                    id="confirmEmail"
+                    type="text"
+                    labelText="Confirm email address"
+                    value={confirmEmail}
+                    disabled={isSubmitting}
+                    {...validationProps('confirmEmail')}
+                    onChange={(event: FormEvent<HTMLInputElement>) => {
+                      setConfirmEmail(event.currentTarget.value);
+                      clearError('confirmEmail');
+                      clearFormState();
+                    }}
+                  />
+                  <TextInput
+                    required
+                    id="password"
+                    type="password"
+                    labelText="Password"
+                    value={password}
+                    helperText={`Between ${PASSWORD_MIN_LENGTH} and ${PASSWORD_MAX_LENGTH} letters`}
+                    disabled={isSubmitting}
+                    {...validationProps('password')}
+                    onChange={(event: FormEvent<HTMLInputElement>) => {
+                      setPassword(event.currentTarget.value);
+                      clearError('password');
+                      clearFormState();
+                    }}
+                  />
+                  {renderNotifications()}
+                </Stack>
+              </Form>
+            </main>
+          </Stack>
+        </Modal>
       </div>
     </FullScreenContainer>
   );
