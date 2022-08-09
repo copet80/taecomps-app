@@ -15,9 +15,9 @@ type SetCurrentTournamentFunc = (tournament: Tournament) => void;
 export type StoreReturnType = {
   registerEmail: string;
   setRegisterEmail: SetRegisterEmailFunc;
-  currentUser: User | null;
+  currentUser: User | undefined;
   setCurrentUser: SetCurrentUserFunc;
-  currentTournament: Tournament | null;
+  currentTournament: Tournament | undefined;
   setCurrentTournament: SetCurrentTournamentFunc;
 };
 
@@ -25,10 +25,10 @@ const StoreContext = createContext({ signUpEmail: '' });
 
 function useStoreFn(): StoreReturnType {
   const [registerEmail, setRegisterEmail] = useState('');
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [currentTournament, setCurrentTournament] = useState<Tournament | null>(
-    null,
-  );
+  const [currentUser, setCurrentUser] = useState<User | undefined>(undefined);
+  const [currentTournament, setCurrentTournament] = useState<
+    Tournament | undefined
+  >(undefined);
 
   return {
     registerEmail,

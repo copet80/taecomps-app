@@ -37,7 +37,7 @@ export default function Register({ onRegisterSuccess, onLoginClick }: Props) {
   const [email, setEmail] = useState(registerEmail || '');
   const [confirmEmail, setConfirmEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [formState, setFormState] = useState<FormState | null>(null);
+  const [formState, setFormState] = useState<FormState | undefined>(undefined);
 
   const isSubmitting = useMemo(
     () => formState === FormState.Registering,
@@ -123,7 +123,7 @@ export default function Register({ onRegisterSuccess, onLoginClick }: Props) {
   }
 
   function clearFormState() {
-    setFormState(null);
+    setFormState(undefined);
   }
 
   function renderNotifications() {

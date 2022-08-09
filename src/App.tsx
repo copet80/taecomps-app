@@ -15,6 +15,7 @@ const EntriesPage = lazy(() => import('./pages/Entries'));
 const LoginPage = lazy(() => import('./pages/Login'));
 const ProfilePage = lazy(() => import('./pages/Profile'));
 const RegisterPage = lazy(() => import('./pages/Register'));
+const TournamentDetailsPage = lazy(() => import('./pages/TournamentDetails'));
 
 enum AuthState {
   Loading,
@@ -83,6 +84,9 @@ export default function App() {
                 element={
                   <ProfilePage onLogoutClick={handleLogoutClick} />
                 }></Route>
+              <Route
+                path={AppRoutes.TournamentDetails}
+                element={<TournamentDetailsPage />}></Route>
               <Route
                 path="*"
                 element={<Navigate to={AppRoutes.Dashboard} replace />}

@@ -1,0 +1,19 @@
+@import '../../App.scss';
+
+.TournamentSwitcher {
+  .contentSwitcherContainer {
+    @include desktop {
+      width: 60%;
+    }
+  }
+
+  .tilesContainer {
+    display: grid;
+    grid-gap: 1rem;
+    grid-template-columns: repeat(auto-fill, 100%);
+
+    @include desktop {
+      grid-template-columns: repeat(auto-fill, calc(50% - 1rem));
+    }
+  }
+}

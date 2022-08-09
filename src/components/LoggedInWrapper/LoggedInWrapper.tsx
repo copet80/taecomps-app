@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 
 import {
   Header,
@@ -10,14 +10,11 @@ import {
   HeaderMenuItem,
   HeaderName,
   HeaderNavigation,
-  HeaderPanel,
   HeaderSideNavItems,
   SkipToContent,
   SideNav,
+  SideNavDivider,
   SideNavItems,
-  Switcher,
-  SwitcherDivider,
-  SwitcherItem,
 } from '@carbon/react';
 import {
   Switcher as SwitcherIcon,
@@ -28,23 +25,87 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import './LoggedInWrapper.scss';
 
 import AppRoutes from '../../AppRoutes';
-import { useApi } from '../../hooks';
-
-type Props = {};
+import { useApi, useStore } from '../../hooks';
+import TournamentSwitcher from '../TournamentSwitcher';
+import { Tournament } from '../../types';
 
 export default function LoggedInWrapper({
   children,
-}: PropsWithChildren<Props>) {
+}: PropsWithChildren<unknown>) {
   const navigate = useNavigate();
   const location = useLocation();
   const [isTournamentSwitcherActive, setIsTournamentSwitcherActive] =
     useState(false);
-  const { tournaments } = useApi();
+  const { currentTournament, setCurrentTournament } = useStore();
+  const { tournaments, listTournaments, createTournament } = useApi();
 
-  function handleTournamentSwitcherClick() {}
+  const tournamentOptions = useMemo(
+    () => (
+      <HeaderMenu aria-label="Gold Coast Open" menuLinkName="Gold Coast Open">
+        <HeaderMenuItem href="#">NSW State Championship</HeaderMenuItem>
+        <HeaderMenuItem href="#">Melbourne National Selections</HeaderMenuItem>
+        <SideNavDivider />
+        <HeaderMenuItem onClick={handleTournamentSwitcherClick}>
+          Manage tournaments
+        </HeaderMenuItem>
+      </HeaderMenu>
+    ),
+    [],
+  );
+
+  const tournamentSubOptions = useMemo(
+    () => (
+      <>
+        <HeaderMenuItem
+          isCurrentPage={location.pathname === AppRoutes.Dashboard}
+          onClick={() => navigate(AppRoutes.Dashboard)}>
+          Dashboard
+        </HeaderMenuItem>
+        <HeaderMenuItem
+          isCurrentPage={location.pathname === AppRoutes.Entries}
+          onClick={() => navigate(AppRoutes.Entries)}>
+          Entries
+        </HeaderMenuItem>
+        <HeaderMenuItem
+          isCurrentPage={location.pathname === AppRoutes.Bracket}
+          onClick={() => navigate(AppRoutes.Bracket)}>
+          Bracket
+        </HeaderMenuItem>
+        <HeaderMenuItem
+          isCurrentPage={location.pathname === AppRoutes.TournamentDetails}
+          onClick={() => navigate(AppRoutes.TournamentDetails)}>
+          Tournament Details
+        </HeaderMenuItem>
+      </>
+    ),
+    [location],
+  );
+
+  useEffect(() => {
+    listTournaments();
+  }, []);
+
+  async function switchTournament(tournament: Tournament) {
+    setCurrentTournament(tournament);
+    return Promise.resolve(tournament);
+  }
+
+  function handleTournamentSwitcherClick() {
+    setIsTournamentSwitcherActive(true);
+  }
 
   function handleProfileClick() {
     navigate(AppRoutes.Profile);
+  }
+
+  function handleSwitchTournament(tournament: Tournament) {
+    setCurrentTournament(tournament);
+    setIsTournamentSwitcherActive(false);
+    navigate(AppRoutes.TournamentDetails);
+  }
+
+  function handleCancelSwitchTournament() {
+    setIsTournamentSwitcherActive(false);
   }
 
   function renderHeader({ isSideNavExpanded, onClickSideNavExpand }: any) {
@@ -59,34 +120,23 @@ export default function LoggedInWrapper({
         <HeaderName href="/" prefix="">
           Taecomps
         </HeaderName>
-        <HeaderNavigation aria-label="Taecomps">
-          <HeaderMenuItem
-            isCurrentPage={location.pathname === AppRoutes.Dashboard}
-            onClick={() => navigate(AppRoutes.Dashboard)}>
-            Dashboard
-          </HeaderMenuItem>
-          <HeaderMenuItem
-            isCurrentPage={location.pathname === AppRoutes.Entries}
-            onClick={() => navigate(AppRoutes.Entries)}>
-            Entries
-          </HeaderMenuItem>
-          <HeaderMenuItem
-            isCurrentPage={location.pathname === AppRoutes.Bracket}
-            onClick={() => navigate(AppRoutes.Bracket)}>
-            Bracket
-          </HeaderMenuItem>
+        <HeaderNavigation aria-label="Current Tournament">
+          {tournamentOptions}
+        </HeaderNavigation>
+        <HeaderNavigation aria-label="Tournament Details">
+          {tournamentSubOptions}
         </HeaderNavigation>
         <HeaderGlobalBar>
           <HeaderGlobalAction
+            isActive={location.pathname === AppRoutes.Profile}
             aria-label="User Profile"
             onClick={handleProfileClick}>
             <UserIcon size={20} />
           </HeaderGlobalAction>
           <HeaderGlobalAction
-            aria-label="Tournament Switcher"
             isActive={isTournamentSwitcherActive}
-            onClick={handleTournamentSwitcherClick}
-            tooltipAlignment="end">
+            aria-label="Manage Tournaments"
+            onClick={handleTournamentSwitcherClick}>
             <SwitcherIcon size={20} />
           </HeaderGlobalAction>
         </HeaderGlobalBar>
@@ -95,23 +145,10 @@ export default function LoggedInWrapper({
           expanded={isSideNavExpanded}
           isPersistent={false}>
           <SideNavItems>
-            <HeaderSideNavItems>
-              <HeaderMenuItem
-                isCurrentPage={location.pathname === AppRoutes.Dashboard}
-                onClick={() => navigate(AppRoutes.Dashboard)}>
-                Dashboard
-              </HeaderMenuItem>
-              <HeaderMenuItem
-                isCurrentPage={location.pathname === AppRoutes.Entries}
-                onClick={() => navigate(AppRoutes.Entries)}>
-                Entries
-              </HeaderMenuItem>
-              <HeaderMenuItem
-                isCurrentPage={location.pathname === AppRoutes.Bracket}
-                onClick={() => navigate(AppRoutes.Bracket)}>
-                Bracket
-              </HeaderMenuItem>
+            <HeaderSideNavItems hasDivider={true}>
+              {tournamentOptions}
             </HeaderSideNavItems>
+            <HeaderSideNavItems>{tournamentSubOptions}</HeaderSideNavItems>
           </SideNavItems>
         </SideNav>
       </Header>
@@ -122,6 +159,16 @@ export default function LoggedInWrapper({
     <div className="LoggedInWrapper">
       <HeaderContainer render={renderHeader} />
       {children}
+      <TournamentSwitcher
+        currentTournament={currentTournament}
+        isVisible={isTournamentSwitcherActive}
+        tournaments={tournaments}
+        createCallback={createTournament}
+        switchCallback={switchTournament}
+        onCreateSuccess={handleSwitchTournament}
+        onSwitchSuccess={handleSwitchTournament}
+        onCloseClick={handleCancelSwitchTournament}
+      />
     </div>
   );
 }

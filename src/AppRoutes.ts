@@ -7,6 +7,7 @@ enum AppRoutes {
   Profile = '/profile',
   Register = '/register',
   ResetPassword = '/resetpassword',
+  TournamentDetails = '/tournament',
 }
 
 export default AppRoutes;

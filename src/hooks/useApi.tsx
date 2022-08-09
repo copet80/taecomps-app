@@ -5,30 +5,82 @@ import React, {
   PropsWithChildren,
 } from 'react';
 
-import { Tournament } from '../types';
+import {
+  collection,
+  doc,
+  Firestore,
+  onSnapshot,
+  query,
+  setDoc,
+  Unsubscribe,
+  where,
+} from 'firebase/firestore';
+import { v4 as uuid } from 'uuid';
+import { DateTime } from 'luxon';
 
-type ListTournamentFunc = () => void;
+import {
+  CreateTournamentFn,
+  DbCollection,
+  ListTournamentsFn,
+  Tournament,
+  UpdateTournamentFn,
+} from '../types';
 
 export type ApiReturnType = {
   tournaments: Tournament[];
-  listTournament: ListTournamentFunc;
+  listTournaments: ListTournamentsFn;
+  createTournament: CreateTournamentFn;
+  updateTournament: UpdateTournamentFn;
 };
 
 const ApiContext = createContext({ tournaments: [] });
 
-function useApiFn(): ApiReturnType {
+function useApiFn(db: Firestore): ApiReturnType {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
 
-  function listTournament() {}
+  function listTournaments(): Unsubscribe {
+    const q = query(collection(db, DbCollection.Tournaments));
+    return onSnapshot(q, (querySnapshot) => {
+      const t: Tournament[] = [];
+      querySnapshot.forEach((doc) => {
+        t.push(doc.data() as Tournament);
+      });
+      setTournaments(t);
+      console.log(t, tournaments);
+    });
+  }
+
+  async function createTournament(name: string): Promise<Tournament> {
+    const id = uuid();
+    const tournament = {
+      id,
+      name,
+      createdAt: DateTime.now().toISO(),
+      isDeleted: false,
+    };
+    await setDoc(doc(db, DbCollection.Tournaments, id), tournament);
+    return tournament;
+  }
+
+  async function updateTournament(tournament: Tournament): Promise<Tournament> {
+    await setDoc(doc(db, DbCollection.Tournaments, tournament.id), tournament);
+    return tournament;
+  }
 
   return {
     tournaments,
-    listTournament,
+    listTournaments,
+    createTournament,
+    updateTournament,
   };
 }
 
-export function ApiProvider({ children }: PropsWithChildren<unknown>) {
-  const returnProps = useApiFn();
+type Props = {
+  db: Firestore;
+};
+
+export function ApiProvider({ db, children }: PropsWithChildren<Props>) {
+  const returnProps = useApiFn(db);
   return (
     // @ts-ignore
     <ApiContext.Provider value={returnProps}>

@@ -21,3 +21,17 @@ a {
     no-repeat;
   background-size: cover;
 }
+
+$phoneWidth: 672px;
+
+@mixin phone {
+  @media (max-width: #{$phoneWidth - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$phoneWidth}) {
+    @content;
+  }
+}

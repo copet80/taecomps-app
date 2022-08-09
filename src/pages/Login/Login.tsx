@@ -62,7 +62,7 @@ export default function Login({ onLoginSuccess, onRegisterClick }: Props) {
   const [rememberEmail, setRememberEmail] = useState(
     Boolean(window.localStorage.getItem('rememberEmail')),
   );
-  const [formState, setFormState] = useState<FormState | null>(null);
+  const [formState, setFormState] = useState<FormState | undefined>(undefined);
 
   const isSubmitting = useMemo(
     () =>
@@ -115,7 +115,7 @@ export default function Login({ onLoginSuccess, onRegisterClick }: Props) {
   }
 
   function clearFormState() {
-    setFormState(null);
+    setFormState(undefined);
   }
 
   function renderNotifications() {
