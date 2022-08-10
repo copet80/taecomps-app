@@ -24,6 +24,7 @@ import {
   AddRecentTournamentFn,
   CreateTournamentFn,
   DbCollection,
+  DeleteTournamentFn,
   ListRecentTournamentsFn,
   ListTournamentsFn,
   Tournament,
@@ -37,6 +38,7 @@ export type ApiReturnType = {
   listTournaments: ListTournamentsFn;
   createTournament: CreateTournamentFn;
   updateTournament: UpdateTournamentFn;
+  deleteTournament: DeleteTournamentFn;
   listRecentTournaments: ListRecentTournamentsFn;
   addRecentTournament: AddRecentTournamentFn;
 };
@@ -53,7 +55,10 @@ function useApiFn(db: Firestore): ApiReturnType {
   }, [tournaments]);
 
   const listTournaments = useCallback((): Unsubscribe => {
-    const q = query(collection(db, DbCollection.Tournaments));
+    const q = query(
+      collection(db, DbCollection.Tournaments),
+      where('isDeleted', '==', false),
+    );
     return onSnapshot(q, (querySnapshot) => {
       const t: Tournament[] = [];
       querySnapshot.forEach((doc) => {
@@ -88,6 +93,15 @@ function useApiFn(db: Firestore): ApiReturnType {
     },
     [],
   );
+
+  const deleteTournament = useCallback(async (id: string): Promise<boolean> => {
+    await setDoc(
+      doc(db, DbCollection.Tournaments, id),
+      { isDeleted: true },
+      { merge: true },
+    );
+    return true;
+  }, []);
 
   const listRecentTournaments: ListRecentTournamentsFn = useCallback(() => {
     const recentTournamentIds: string[] = JSON.parse(
@@ -129,6 +143,7 @@ function useApiFn(db: Firestore): ApiReturnType {
     listTournaments,
     createTournament,
     updateTournament,
+    deleteTournament,
     listRecentTournaments,
     addRecentTournament,
   };

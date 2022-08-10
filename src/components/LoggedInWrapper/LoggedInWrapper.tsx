@@ -36,7 +36,14 @@ import TournamentSwitcher from '../TournamentSwitcher';
 import { Tournament } from '../../types';
 import { sortTournamentByDate } from '../../utils';
 
-function LoggedInWrapper({ children }: PropsWithChildren<unknown>) {
+type Props = {
+  onSwitchTournamentSuccess: (tournament: Tournament) => void;
+};
+
+function LoggedInWrapper({
+  children,
+  onSwitchTournamentSuccess,
+}: PropsWithChildren<Props>) {
   const navigate = useNavigate();
   const location = useLocation();
   const [isTournamentSwitcherActive, setIsTournamentSwitcherActive] =
@@ -64,7 +71,10 @@ function LoggedInWrapper({ children }: PropsWithChildren<unknown>) {
           <HeaderMenuItem
             key={t.id}
             isCurrentPage={currentTournament?.id === t.id}
-            onClick={() => switchTournament(t)}>
+            onClick={async () => {
+              await switchTournament(t);
+              onSwitchTournamentSuccess(t);
+            }}>
             {t.name}
           </HeaderMenuItem>
         ))}
@@ -133,6 +143,7 @@ function LoggedInWrapper({ children }: PropsWithChildren<unknown>) {
     setCurrentTournament(tournament);
     setIsTournamentSwitcherActive(false);
     navigate(AppRoutes.Dashboard);
+    onSwitchTournamentSuccess(tournament);
   }
 
   function handleCancelSwitchTournament() {

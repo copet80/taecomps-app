@@ -1,5 +1,11 @@
 import React from 'react';
 
+import { FullScreenContainer } from '../../components';
+
 export default function Entries() {
-  return <div className="EntriesContainer">Entries</div>;
+  return (
+    <FullScreenContainer>
+      <div className="PageContainer EntriesContainer"></div>
+    </FullScreenContainer>
+  );
 }

@@ -24,6 +24,7 @@ a {
 }
 
 $phoneWidth: 672px;
+$tabletWidth: 940px;
 
 @mixin phone {
   @media (max-width: #{$phoneWidth - 1px}) {
@@ -33,6 +34,12 @@ $phoneWidth: 672px;
 
 @mixin desktop {
   @media (min-width: #{$phoneWidth}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (max-width: #{$tabletWidth - 1px}) {
     @content;
   }
 }

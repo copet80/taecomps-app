@@ -18,6 +18,7 @@ export type Tournament = {
 
 export type Entry = {
   id: string;
+  tournamentId: string;
   name: string;
   age: number;
   belt: string;
@@ -28,6 +29,8 @@ export type Entry = {
   deletedAt?: string;
 };
 
+export type NewEntry = Pick<Entry, 'name' | 'age' | 'belt' | 'weight'>;
+
 export type Division = {
   id: string;
   name: string;
@@ -35,13 +38,22 @@ export type Division = {
   maxWeight: number;
 };
 
-export type SwitchTournamentFn = (
-  tournament: Tournament,
-) => Promise<Tournament>;
+export type ListTournamentsFn = () => Unsubscribe;
 export type CreateTournamentFn = (name: string) => Promise<Tournament>;
 export type UpdateTournamentFn = (
   tournament: Tournament,
 ) => Promise<Tournament>;
-export type ListTournamentsFn = () => Unsubscribe;
+export type DeleteTournamentFn = (id: string) => Promise<boolean>;
+export type SwitchTournamentFn = (
+  tournament: Tournament,
+) => Promise<Tournament>;
 export type ListRecentTournamentsFn = () => Tournament[];
 export type AddRecentTournamentFn = (tournament: Tournament) => Tournament[];
+
+export type ListEntriesFn = (tournamentId: string) => Unsubscribe;
+export type CreateEntryFn = (
+  tournamentId: string,
+  newEntry: NewEntry,
+) => Promise<Entry>;
+export type UpdateEntryFn = (entry: Entry) => Promise<Entry>;
+export type DeleteEntryFn = (id: string) => Promise<boolean>;

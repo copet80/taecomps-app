@@ -8,6 +8,7 @@ import './styles/App.scss';
 import { FullScreenSpinner, LoggedInWrapper } from './components';
 import { useStore } from './hooks';
 import AppRoutes, { TournamentAppRoutes } from './AppRoutes';
+import { Tournament } from './types';
 
 const BracketPage = lazy(() => import('./pages/Bracket'));
 const DashboardPage = lazy(() => import('./pages/Dashboard'));
@@ -47,14 +48,6 @@ export default function App() {
       TournamentAppRoutes.includes(location.pathname as AppRoutes)
     ) {
       navigate(AppRoutes.Dashboard, { replace: true });
-      return;
-    }
-    if (
-      currentTournament &&
-      !TournamentAppRoutes.includes(location.pathname as AppRoutes)
-    ) {
-      navigate(AppRoutes.Dashboard, { replace: true });
-      return;
     }
   }, [currentTournament]);
 
@@ -82,13 +75,23 @@ export default function App() {
     } catch (error) {}
   }
 
+  function handleSwitchTournamentSuccess(tournament: Tournament) {
+    if (
+      tournament &&
+      !TournamentAppRoutes.includes(location.pathname as AppRoutes)
+    ) {
+      navigate(AppRoutes.Dashboard, { replace: true });
+    }
+  }
+
   switch (authState) {
     case AuthState.Loading:
       return <FullScreenSpinner />;
 
     case AuthState.LoggedIn:
       return (
-        <LoggedInWrapper>
+        <LoggedInWrapper
+          onSwitchTournamentSuccess={handleSwitchTournamentSuccess}>
           <Suspense fallback={<FullScreenSpinner />}>
             <Routes>
               <Route path={AppRoutes.Dashboard} element={<DashboardPage />} />

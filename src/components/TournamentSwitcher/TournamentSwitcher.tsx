@@ -93,11 +93,6 @@ export default function TournamentSwitcher({
     [formState],
   );
 
-  const hiddenTournamentsCount = useMemo(
-    () => rawTournaments.length - tournaments.length,
-    [tournaments, rawTournaments],
-  );
-
   useEffect(() => {
     if (isVisible) {
       setCreateMode(false);

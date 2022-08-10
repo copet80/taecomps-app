@@ -1,0 +1,43 @@
+@import '../../styles/App.scss';
+
+.EmptyStateContainer,
+.EmptyStateContent,
+.EmptyState {
+  width: 100%;
+  height: 100%;
+}
+
+.EmptyStateContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.EmptyStateContent {
+  display: grid;
+  grid-template-columns: 600px auto;
+  align-items: center;
+  width: 1000px;
+
+  @include tablet {
+    padding: var(--padding-pagecontainer-normal);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
+    .EmptyState {
+      height: 100vw;
+    }
+  }
+}
+
+.EmptyState {
+  background: transparent url(../../assets/svg/empty-state.svg) center center
+    no-repeat;
+  background-size: contain;
+
+  &.pageNotFound {
+    background-image: url(../../assets/svg/404.svg);
+  }
+}

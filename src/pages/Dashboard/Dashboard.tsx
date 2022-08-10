@@ -4,35 +4,55 @@ import { Stack } from '@carbon/react';
 
 import './Dashboard.scss';
 
-import { FullScreenContainer } from '../../components';
+import { EmptyState, FullScreenContainer } from '../../components';
 import { useStore } from '../../hooks';
 
 import TournamentTile from './TournamentTile';
-import EditTournamentDetailsDialog from './EditTournamentDetailsDialog';
+import EditTournamentDialog from './EditTournamentDialog';
+import DeleteTournamentDialog from './DeleteTournamentDialog';
 
 enum Mode {
-  EditTournamentDetails,
+  EditTournament,
+  DeleteTournament,
 }
 
 export default function Dashboard() {
-  const { currentTournament } = useStore();
+  const { currentTournament, setCurrentTournament } = useStore();
 
   const [mode, setMode] = useState<Mode | undefined>(undefined);
 
   if (!currentTournament) {
-    return null;
+    return (
+      <EmptyState
+        title=""
+        subTitle="Please select a tournament from the menu to start managing it."
+      />
+    );
   }
 
-  function handleEditTournamentDetails() {
-    setMode(Mode.EditTournamentDetails);
+  function handleEditTournament() {
+    setMode(Mode.EditTournament);
   }
 
-  function handleCancelEditTournamentDetails() {
+  function handleCancelEditTournament() {
     setMode(undefined);
   }
 
-  function handleEditTournamentDetailsSuccess() {
+  function handleEditTournamentSuccess() {
     setMode(undefined);
+  }
+
+  function handleDeleteTournament() {
+    setMode(Mode.DeleteTournament);
+  }
+
+  function handleCancelDeleteTournament() {
+    setMode(undefined);
+  }
+
+  function handleDeleteTournamentSuccess() {
+    setMode(undefined);
+    setCurrentTournament(undefined);
   }
 
   return (
@@ -43,16 +63,23 @@ export default function Dashboard() {
           <section className="primary">
             <TournamentTile
               tournament={currentTournament}
-              onEditClick={handleEditTournamentDetails}
+              onEditClick={handleEditTournament}
+              onDeleteClick={handleDeleteTournament}
             />
           </section>
         </Stack>
       </div>
-      <EditTournamentDetailsDialog
-        isVisible={mode === Mode.EditTournamentDetails}
+      <EditTournamentDialog
+        isVisible={mode === Mode.EditTournament}
         tournament={currentTournament}
-        onCancelClick={handleCancelEditTournamentDetails}
-        onUpdateSuccess={handleEditTournamentDetailsSuccess}
+        onCancelClick={handleCancelEditTournament}
+        onUpdateSuccess={handleEditTournamentSuccess}
+      />
+      <DeleteTournamentDialog
+        isVisible={mode === Mode.DeleteTournament}
+        tournament={currentTournament}
+        onCancelClick={handleCancelDeleteTournament}
+        onDeleteSuccess={handleDeleteTournamentSuccess}
       />
     </FullScreenContainer>
   );

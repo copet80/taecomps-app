@@ -10,7 +10,7 @@ import { Tournament } from '../types';
 
 type SetRegisterEmailFn = (email: string) => void;
 type SetCurrentUserFn = (user: User) => void;
-type SetCurrentTournamentFn = (tournament: Tournament) => void;
+type SetCurrentTournamentFn = (tournament?: Tournament) => void;
 
 export type StoreReturnType = {
   registerEmail: string;
