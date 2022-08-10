@@ -11,18 +11,25 @@ import {
   TextInput,
 } from '@carbon/react';
 import { Add as AddIcon } from '@carbon/icons-react';
+import cx from 'classnames';
 import { object, string } from 'yup';
 
 import './TournamentSwitcher.scss';
 
-import { useValidation } from '../../hooks';
+import { useApi, useValidation } from '../../hooks';
 import {
   Tournament,
   SwitchTournamentFn,
   CreateTournamentFn,
 } from '../../types';
+import { formAction, sortTournamentByName } from '../../utils';
+
 import TournamentTile from './TournamentTile';
-import { sortTournamentByName } from '../../utils';
+
+enum Filter {
+  Recent,
+  All,
+}
 
 enum FormState {
   Switching,
@@ -62,15 +69,19 @@ export default function TournamentSwitcher({
 }: Props) {
   const { clearError, validate, validationProps } =
     useValidation(tournamentSchema);
+  const { listRecentTournaments } = useApi();
   const tournamentNameInputRef = useRef<HTMLInputElement>(null);
   const [formState, setFormState] = useState<FormState | undefined>(undefined);
   const [createMode, setCreateMode] = useState(false);
   const [tournamentName, setTournamentName] = useState('');
+  const [filter, setFilter] = useState<Filter>(Filter.Recent);
 
-  const tournaments = useMemo(
-    () => rawTournaments.sort(sortTournamentByName),
-    [rawTournaments],
-  );
+  const tournaments = useMemo(() => {
+    if (filter === Filter.Recent) {
+      return listRecentTournaments();
+    }
+    return rawTournaments.sort(sortTournamentByName);
+  }, [rawTournaments, filter, listRecentTournaments]);
 
   const isCreating = useMemo(
     () => formState === FormState.Creating,
@@ -80,6 +91,11 @@ export default function TournamentSwitcher({
   const isSwitching = useMemo(
     () => formState === FormState.Switching,
     [formState],
+  );
+
+  const hiddenTournamentsCount = useMemo(
+    () => rawTournaments.length - tournaments.length,
+    [tournaments, rawTournaments],
   );
 
   useEffect(() => {
@@ -181,7 +197,7 @@ export default function TournamentSwitcher({
   function renderCreateForm() {
     return (
       <Stack gap={6}>
-        <Form>
+        <Form onSubmit={formAction(handleCreate)}>
           <TextInput
             ref={tournamentNameInputRef}
             required
@@ -223,20 +239,31 @@ export default function TournamentSwitcher({
     return (
       <Stack gap={6}>
         <div className="contentSwitcherContainer">
-          <ContentSwitcher onChange={console.log}>
-            <Switch name="recent" text="Recent" />
-            <Switch name="all" text="All tournaments" />
+          <ContentSwitcher
+            selectedIndex={filter}
+            onChange={({ name }: { name: Filter }) => {
+              setFilter(name);
+            }}>
+            <Switch name={Filter.Recent} text="Recent" />
+            <Switch name={Filter.All} text="All tournaments" />
           </ContentSwitcher>
         </div>
         {renderTiles()}
         {renderSwitchNotifications()}
+        {filter === Filter.Recent && (
+          <p>
+            Showing recent {tournaments.length} of all {rawTournaments.length}{' '}
+            tournaments.{' '}
+            <a onClick={() => setFilter(Filter.All)}>Show all tournaments</a>
+          </p>
+        )}
       </Stack>
     );
   }
 
   return (
     <Modal
-      className="TournamentSwitcher"
+      className={cx('TournamentSwitcher', { createMode })}
       open={isVisible}
       modalHeading={createMode ? 'Create new tournament' : 'Manage tournaments'}
       passiveModal={!createMode}

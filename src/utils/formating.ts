@@ -18,9 +18,9 @@ export function formatTournamentDate(
       )}`;
     }
 
-    return `From ${lStartDate.toLocaleString(
+    return `${lStartDate.toLocaleString(
       DateTime.DATE_MED_WITH_WEEKDAY,
-    )} to ${lEndDate.toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY)}`;
+    )} ~ ${lEndDate.toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY)}`;
   }
 
   if (startDate) {

@@ -64,4 +64,13 @@
       right: 0.5rem;
     }
   }
+
+  &:not(.createMode) {
+    .cds--modal-container {
+      @include desktop {
+        max-height: 640px;
+        height: 100%;
+      }
+    }
+  }
 }

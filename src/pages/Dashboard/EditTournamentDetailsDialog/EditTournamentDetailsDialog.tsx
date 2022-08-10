@@ -14,7 +14,7 @@ import {
   TextInput,
 } from '@carbon/react';
 import { DateTime } from 'luxon';
-import { date, DateSchema, object, string } from 'yup';
+import { object, string } from 'yup';
 
 import { Tournament } from '../../../types';
 import { useApi, useValidation } from '../../../hooks';
@@ -22,6 +22,7 @@ import {
   TOURNAMENT_DESCRIPTION_MAX_LENGTH,
   TOURNAMENT_NAME_MAX_LENGTH,
   getLocale,
+  formAction,
 } from '../../../utils';
 
 enum FormState {
@@ -102,17 +103,6 @@ function TournamentDetailsEdit({
   );
 
   const updateSchema = useMemo(() => {
-    const dateSchema: { endDate?: DateSchema } = {};
-    if (useEndDate) {
-      if (useStartDate && formValues.startDate) {
-        dateSchema.endDate = date().min(formValues.startDate, () => ({
-          field: 'endDate',
-          key: 'min',
-          message: 'Tournament end date cannot be before its start date',
-        }));
-      }
-    }
-
     return object({
       name: string()
         .required(() => ({
@@ -130,9 +120,8 @@ function TournamentDetailsEdit({
         key: 'max',
         message: `Please enter a maximum of ${TOURNAMENT_DESCRIPTION_MAX_LENGTH} characters`,
       })),
-      // ...dateSchema,
     });
-  }, [formValues]);
+  }, []);
 
   const { clearError, clearAllErrors, setSchema, validate, validationProps } =
     useValidation(updateSchema);
@@ -230,7 +219,7 @@ function TournamentDetailsEdit({
             <h2>Tournament Details</h2>
           </header>
           <main>
-            <Form>
+            <Form onSubmit={formAction(handleUpdate)}>
               <Stack gap={6}>
                 <TextInput
                   data-modal-primary-focus
@@ -277,9 +266,11 @@ function TournamentDetailsEdit({
                   <Stack gap={6} orientation="horizontal">
                     {useStartDate && (
                       <DatePicker
+                        allowInput={false}
                         locale={locale}
                         dateFormat="d/m/Y"
                         datePickerType="single"
+                        maxDate={formValues.endDate}
                         value={formValues.startDate}
                         {...validationProps('startDate')}
                         onChange={([value]: Date[]) => {
@@ -295,9 +286,11 @@ function TournamentDetailsEdit({
                     )}
                     {useEndDate && (
                       <DatePicker
+                        allowInput={false}
                         locale={locale}
                         dateFormat="d/m/Y"
                         datePickerType="single"
+                        minDate={formValues.startDate}
                         value={formValues.endDate}
                         {...validationProps('endDate')}
                         onChange={([value]: Date[]) => {
