@@ -1,0 +1,16 @@
+@import '../../styles/App.scss';
+
+.DashboardContainer {
+  section {
+    &.primary {
+      @include desktop {
+        display: grid;
+        grid-template-columns: 500px auto;
+      }
+
+      .cds--tile {
+        height: 300px;
+      }
+    }
+  }
+}

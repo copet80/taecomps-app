@@ -7,7 +7,7 @@ import './styles/App.scss';
 
 import { FullScreenSpinner, LoggedInWrapper } from './components';
 import { useStore } from './hooks';
-import AppRoutes from './AppRoutes';
+import AppRoutes, { TournamentAppRoutes } from './AppRoutes';
 
 const BracketPage = lazy(() => import('./pages/Bracket'));
 const DashboardPage = lazy(() => import('./pages/Dashboard'));
@@ -16,7 +16,6 @@ const LoginPage = lazy(() => import('./pages/Login'));
 const NotFoundPage = lazy(() => import('./pages/NotFound'));
 const ProfilePage = lazy(() => import('./pages/Profile'));
 const RegisterPage = lazy(() => import('./pages/Register'));
-const TournamentDetailsPage = lazy(() => import('./pages/TournamentDetails'));
 
 enum AuthState {
   Loading,
@@ -45,13 +44,17 @@ export default function App() {
   useEffect(() => {
     if (
       !currentTournament &&
-      [
-        AppRoutes.Bracket,
-        AppRoutes.Entries,
-        AppRoutes.TournamentDetails,
-      ].includes(location.pathname as AppRoutes)
+      TournamentAppRoutes.includes(location.pathname as AppRoutes)
     ) {
       navigate(AppRoutes.Dashboard, { replace: true });
+      return;
+    }
+    if (
+      currentTournament &&
+      !TournamentAppRoutes.includes(location.pathname as AppRoutes)
+    ) {
+      navigate(AppRoutes.Dashboard, { replace: true });
+      return;
     }
   }, [currentTournament]);
 
@@ -94,10 +97,6 @@ export default function App() {
               <Route
                 path={AppRoutes.Profile}
                 element={<ProfilePage onLogoutClick={handleLogoutClick} />}
-              />
-              <Route
-                path={AppRoutes.TournamentDetails}
-                element={<TournamentDetailsPage />}
               />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>

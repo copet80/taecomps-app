@@ -168,12 +168,7 @@ export default function TournamentSwitcher({
         return (
           <InlineNotification
             kind="error"
-            subtitle={
-              <span>
-                There is a problem switching tournament. Please contact{' '}
-                <a href="mailto:taecomps@gmail.com">taecomps@gmail.com</a>
-              </span>
-            }
+            subtitle="There is a problem switching tournament."
             hideCloseButton
             lowContrast={false}
           />
@@ -214,12 +209,7 @@ export default function TournamentSwitcher({
         return (
           <InlineNotification
             kind="error"
-            subtitle={
-              <span>
-                There is a problem creating tournament. Please contact{' '}
-                <a href="mailto:taecomps@gmail.com">taecomps@gmail.com</a>
-              </span>
-            }
+            subtitle="There is a problem creating tournament."
             hideCloseButton
             lowContrast={false}
           />

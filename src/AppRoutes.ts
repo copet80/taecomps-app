@@ -7,7 +7,8 @@ enum AppRoutes {
   Profile = '/profile',
   Register = '/register',
   ResetPassword = '/resetpassword',
-  TournamentDetails = '/tournament',
 }
+
+export const TournamentAppRoutes = [AppRoutes.Bracket, AppRoutes.Entries];
 
 export default AppRoutes;

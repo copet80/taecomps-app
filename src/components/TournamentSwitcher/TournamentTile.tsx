@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 
 import { ClickableTile } from '@carbon/react';
+import { CheckmarkFilled } from '@carbon/icons-react';
 import cx from 'classnames';
 
 import './TournamentSwitcher.scss';
@@ -25,6 +26,9 @@ function TournamentTile({ tournament, selected, onClick }: Props) {
     <ClickableTile className={cx({ selected })} value="1" onClick={handleClick}>
       <div className="tile">
         <div className="tile__mainInfo">
+          <div className="tile__selected--indicator">
+            <CheckmarkFilled />
+          </div>
           <h5>{name}</h5>
           <div className="tournamentDate">
             {formatTournamentDate(startDate, endDate) ?? <em>Date TBC</em>}

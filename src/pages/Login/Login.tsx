@@ -100,6 +100,10 @@ export default function Login({ onLoginSuccess, onRegisterClick }: Props) {
     }
   }
 
+  function clearFormState() {
+    setFormState(undefined);
+  }
+
   function handleRegister() {
     onRegisterClick(email);
   }
@@ -112,10 +116,6 @@ export default function Login({ onLoginSuccess, onRegisterClick }: Props) {
     } catch (error) {
       setFormState(FormState.ResetPasswordError);
     }
-  }
-
-  function clearFormState() {
-    setFormState(undefined);
   }
 
   function renderNotifications() {

@@ -34,6 +34,7 @@ import AppRoutes from '../../AppRoutes';
 import { useApi, useStore } from '../../hooks';
 import TournamentSwitcher from '../TournamentSwitcher';
 import { Tournament } from '../../types';
+import { sortTournamentByDate } from '../../utils';
 
 function LoggedInWrapper({ children }: PropsWithChildren<unknown>) {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ function LoggedInWrapper({ children }: PropsWithChildren<unknown>) {
   const { currentTournament, setCurrentTournament } = useStore();
   const {
     tournaments,
+    tournamentsById,
     listTournaments,
     createTournament,
     listRecentTournaments,
@@ -93,11 +95,6 @@ function LoggedInWrapper({ children }: PropsWithChildren<unknown>) {
             onClick={() => navigate(AppRoutes.Bracket)}>
             Bracket
           </HeaderMenuItem>
-          <HeaderMenuItem
-            isCurrentPage={location.pathname === AppRoutes.TournamentDetails}
-            onClick={() => navigate(AppRoutes.TournamentDetails)}>
-            Tournament Details
-          </HeaderMenuItem>
         </>
       ) : null,
     [location, currentTournament],
@@ -106,6 +103,18 @@ function LoggedInWrapper({ children }: PropsWithChildren<unknown>) {
   useEffect(() => {
     listTournaments();
   }, []);
+
+  useEffect(() => {
+    if (!currentTournament && tournaments.length > 0) {
+      setCurrentTournament(tournaments.sort(sortTournamentByDate)[0]);
+    }
+  }, [tournaments]);
+
+  useEffect(() => {
+    if (currentTournament && tournamentsById[currentTournament.id]) {
+      setCurrentTournament(tournamentsById[currentTournament.id]);
+    }
+  }, [tournamentsById]);
 
   async function switchTournament(tournament: Tournament) {
     setCurrentTournament(tournament);
@@ -123,7 +132,7 @@ function LoggedInWrapper({ children }: PropsWithChildren<unknown>) {
   function handleSwitchTournament(tournament: Tournament) {
     setCurrentTournament(tournament);
     setIsTournamentSwitcherActive(false);
-    navigate(AppRoutes.TournamentDetails);
+    navigate(AppRoutes.Dashboard);
   }
 
   function handleCancelSwitchTournament() {

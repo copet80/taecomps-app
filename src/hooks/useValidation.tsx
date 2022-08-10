@@ -18,6 +18,10 @@ export default function useValidation(yupSchema: AnySchema) {
     return Object.fromEntries(errors.map((error) => [error.field, error]));
   }
 
+  function clearAllErrors() {
+    setErrors({});
+  }
+
   function clearError(field: string) {
     const newErrors = {
       ...errors,
@@ -56,5 +60,6 @@ export default function useValidation(yupSchema: AnySchema) {
     validate,
     validationProps,
     clearError,
+    clearAllErrors,
   };
 }

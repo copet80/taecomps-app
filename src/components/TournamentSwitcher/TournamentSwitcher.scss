@@ -20,12 +20,12 @@
       border: 1px solid var(--cds-border-subtle);
 
       &.selected {
-        border: 1px solid var(--cds-border-interactive, $blue-60);
-        background-color: var(--cds-border-interactive, $blue-60);
-        color: $gray-10;
+        border: 2px solid var(--cds-border-interactive, $blue-60);
+      }
 
-        .tile__secondaryInfo {
-          color: $gray-10;
+      &:not(.selected) {
+        .tile__selected--indicator {
+          display: none;
         }
       }
     }
@@ -55,6 +55,13 @@
       p {
         font-size: 0.7rem;
       }
+    }
+
+    .tile__selected--indicator {
+      color: var(--cds-border-interactive, $blue-60);
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
     }
   }
 }

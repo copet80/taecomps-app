@@ -1,8 +1,6 @@
 import React, { FormEvent, useEffect, useMemo, useState } from 'react';
 
 import {
-  Button,
-  ButtonSkeleton,
   Form,
   InlineNotification,
   Modal,
@@ -90,7 +88,7 @@ export default function Register({ onRegisterSuccess, onLoginClick }: Props) {
     [email],
   );
 
-  const { clearError, errors, setSchema, validate, validationProps } =
+  const { clearError, setSchema, validate, validationProps } =
     useValidation(registerSchema);
 
   useEffect(() => {
@@ -132,12 +130,7 @@ export default function Register({ onRegisterSuccess, onLoginClick }: Props) {
         return (
           <InlineNotification
             kind="error"
-            subtitle={
-              <span>
-                There is a problem creating your account. Please contact{' '}
-                <a href="mailto:taecomps@gmail.com">taecomps@gmail.com</a>
-              </span>
-            }
+            subtitle="There is a problem creating your account."
             hideCloseButton
             lowContrast={false}
           />

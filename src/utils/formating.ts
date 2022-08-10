@@ -53,3 +53,11 @@ export function formatDate(date: string): string {
 export function formatDateTime(date: string): string {
   return DateTime.fromISO(date).toLocaleString(DateTime.DATETIME_SHORT);
 }
+
+export function dateToISO(date: Date): string {
+  return DateTime.fromJSDate(date).toISODate();
+}
+
+export function datetimeToISO(date: Date): string {
+  return DateTime.fromJSDate(date).toISO();
+}

@@ -7,7 +7,7 @@ import './FullScreenContainer.scss';
 import { PropsWithClassName } from '../types';
 
 type Props = {
-  center: boolean;
+  center?: boolean;
 };
 
 function FullScreenContainer({

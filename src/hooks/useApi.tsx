@@ -33,6 +33,7 @@ import { sortTournamentByDate } from '../utils';
 
 export type ApiReturnType = {
   tournaments: Tournament[];
+  tournamentsById: Record<string, Tournament>;
   listTournaments: ListTournamentsFn;
   createTournament: CreateTournamentFn;
   updateTournament: UpdateTournamentFn;
@@ -124,6 +125,7 @@ function useApiFn(db: Firestore): ApiReturnType {
 
   return {
     tournaments,
+    tournamentsById,
     listTournaments,
     createTournament,
     updateTournament,
