@@ -42,7 +42,7 @@ export default function Entries() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [currentTournament]);
 
   if (!currentTournament) {
     return (

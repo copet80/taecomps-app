@@ -24,7 +24,7 @@ export default function Bracket() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [currentTournament]);
 
   if (!currentTournament) {
     return (
