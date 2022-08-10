@@ -1,8 +1,6 @@
 import React, { FormEvent, useMemo, useState } from 'react';
 
 import {
-  Button,
-  ButtonSkeleton,
   Checkbox,
   Modal,
   Form,
@@ -21,7 +19,7 @@ import { object, string } from 'yup';
 
 import './Login.scss';
 
-import { FullScreenContainer } from '../../components';
+import { AppLogo, Box, FullScreenContainer } from '../../components';
 import { useValidation } from '../../hooks';
 
 enum FormState {
@@ -192,12 +190,17 @@ export default function Login({ onLoginSuccess, onRegisterClick }: Props) {
           onRequestSubmit={handleLogin}>
           <Stack gap={6}>
             <header>
-              <Stack gap={3}>
-                <h2>Sign in to Taecomps</h2>
-                <p>
-                  Don't have an account?{' '}
-                  <a onClick={handleRegister}>Create an account</a>
-                </p>
+              <Stack gap={6}>
+                <Box hAlign="center" padding={16}>
+                  <AppLogo />
+                </Box>
+                <Stack gap={3}>
+                  <h2>Sign in</h2>
+                  <p>
+                    Don't have an account?{' '}
+                    <a onClick={handleRegister}>Create an account</a>
+                  </p>
+                </Stack>
               </Stack>
             </header>
             <main>

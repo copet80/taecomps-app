@@ -12,7 +12,7 @@ import { object, string } from 'yup';
 
 import './Register.scss';
 
-import { FullScreenContainer } from '../../components';
+import { AppLogo, Box, FullScreenContainer } from '../../components';
 import { useStore, useValidation } from '../../hooks';
 
 enum FormState {
@@ -154,12 +154,17 @@ export default function Register({ onRegisterSuccess, onLoginClick }: Props) {
           onSecondarySubmit={handleLoginClick}>
           <Stack gap={6}>
             <header>
-              <Stack gap={3}>
-                <h2>Create a Taecomps account</h2>
-                <p>
-                  Already have an account?{' '}
-                  <a onClick={handleLoginClick}>Sign in with your account</a>
-                </p>
+              <Stack gap={6}>
+                <Box hAlign="center" padding={16}>
+                  <AppLogo />
+                </Box>
+                <Stack gap={3}>
+                  <h2>Create an account</h2>
+                  <p>
+                    Already have an account?{' '}
+                    <a onClick={handleLoginClick}>Sign in with your account</a>
+                  </p>
+                </Stack>
               </Stack>
             </header>
             <main>

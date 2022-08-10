@@ -17,7 +17,7 @@ import { useApi, useStore } from './hooks';
 import AppRoutes, { TournamentAppRoutes } from './AppRoutes';
 import { Tournament } from './types';
 
-const BracketPage = lazy(() => import('./pages/Bracket'));
+const BracketPage = lazy(() => import('./pages/Brackets'));
 const DashboardPage = lazy(() => import('./pages/Dashboard'));
 const EntriesPage = lazy(() => import('./pages/Entries'));
 const LoginPage = lazy(() => import('./pages/Login'));

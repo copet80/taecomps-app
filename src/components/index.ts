@@ -1,4 +1,6 @@
+export { default as AppLogo } from './AppLogo';
 export { default as ArchiveTournamentDialog } from './ArchiveTournamentDialog';
+export { default as Box } from './Box';
 export { default as DeleteEntryDialog } from './DeleteEntryDialog';
 export { default as DeleteTournamentDialog } from './DeleteTournamentDialog';
 export { default as EditEntryDialog } from './EditEntryDialog';
