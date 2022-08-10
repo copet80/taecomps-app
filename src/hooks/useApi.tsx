@@ -22,25 +22,32 @@ import { DateTime } from 'luxon';
 
 import {
   AddRecentTournamentFn,
+  CreateEntryFn,
   CreateTournamentFn,
   DbCollection,
   DeleteTournamentFn,
+  Entry,
+  ListEntriesFn,
   ListRecentTournamentsFn,
   ListTournamentsFn,
+  NewEntry,
   Tournament,
   UpdateTournamentFn,
 } from '../types';
 import { sortTournamentByDate } from '../utils';
 
 export type ApiReturnType = {
+  isTournamentsLoaded: boolean;
   tournaments: Tournament[];
   tournamentsById: Record<string, Tournament>;
+  entriesByTournamentId: Record<string, Entry[]>;
   listTournaments: ListTournamentsFn;
   createTournament: CreateTournamentFn;
   updateTournament: UpdateTournamentFn;
   deleteTournament: DeleteTournamentFn;
   listRecentTournaments: ListRecentTournamentsFn;
   addRecentTournament: AddRecentTournamentFn;
+  listEntries: ListEntriesFn;
 };
 
 const MAX_RECENT_TOURNAMENTS = 3;
@@ -48,7 +55,11 @@ const MAX_RECENT_TOURNAMENTS = 3;
 const ApiContext = createContext({ tournaments: [] });
 
 function useApiFn(db: Firestore): ApiReturnType {
+  const [isTournamentsLoaded, setIsTournamentsLoaded] = useState(false);
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
+  const [entriesByTournamentId, setEntriesByTournamentId] = useState<
+    Record<string, Entry[]>
+  >({});
 
   const tournamentsById: Record<string, Tournament> = useMemo(() => {
     return Object.fromEntries(tournaments.map((t) => [t.id, t]));
@@ -65,6 +76,7 @@ function useApiFn(db: Firestore): ApiReturnType {
         t.push(doc.data() as Tournament);
       });
       setTournaments(t);
+      setIsTournamentsLoaded(true);
     });
   }, []);
 
@@ -137,15 +149,72 @@ function useApiFn(db: Firestore): ApiReturnType {
     [],
   );
 
+  const listEntries = useCallback((tournamentId: string): Unsubscribe => {
+    const tournamentDoc = doc(db, DbCollection.Entries, tournamentId);
+    const q = query(
+      collection(tournamentDoc, DbCollection.Entries),
+      where('isDeleted', '==', false),
+    );
+    return onSnapshot(q, (querySnapshot) => {
+      const e: Entry[] = [];
+      querySnapshot.forEach((doc) => {
+        e.push(doc.data() as Entry);
+      });
+      setEntriesByTournamentId({
+        ...entriesByTournamentId,
+        [tournamentId]: e,
+      });
+    });
+  }, []);
+
+  // const createEntry: CreateEntryFn = useCallback(
+  //   async (tournamentId: string, newEntry: NewEntry): Promise<Entry> => {
+  //     const id = uuid();
+  //     const entry = {
+  //       tournamentId,
+  //       id,
+  //       ...newEntry,
+  //       createdAt: DateTime.now().toISO(),
+  //       isDeleted: false,
+  //     };
+  //     await setDoc(doc(db, DbCollection.Entries, id), entry);
+  //     return entry;
+  //   },
+  //   [],
+  // );
+
+  // const updateTournament = useCallback(
+  //   async (tournament: Tournament): Promise<Tournament> => {
+  //     await setDoc(
+  //       doc(db, DbCollection.Tournaments, tournament.id),
+  //       tournament,
+  //     );
+  //     return tournament;
+  //   },
+  //   [],
+  // );
+
+  // const deleteTournament = useCallback(async (id: string): Promise<boolean> => {
+  //   await setDoc(
+  //     doc(db, DbCollection.Tournaments, id),
+  //     { isDeleted: true },
+  //     { merge: true },
+  //   );
+  //   return true;
+  // }, []);
+
   return {
+    isTournamentsLoaded,
     tournaments,
     tournamentsById,
+    entriesByTournamentId,
     listTournaments,
     createTournament,
     updateTournament,
     deleteTournament,
     listRecentTournaments,
     addRecentTournament,
+    listEntries,
   };
 }
 

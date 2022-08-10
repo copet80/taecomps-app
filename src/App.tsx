@@ -6,7 +6,7 @@ import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import './styles/App.scss';
 
 import { FullScreenSpinner, LoggedInWrapper } from './components';
-import { useStore } from './hooks';
+import { useApi, useStore } from './hooks';
 import AppRoutes, { TournamentAppRoutes } from './AppRoutes';
 import { Tournament } from './types';
 
@@ -27,7 +27,13 @@ enum AuthState {
 export default function App() {
   const auth = getAuth();
   const navigate = useNavigate();
-  const { setRegisterEmail, setCurrentUser, currentTournament } = useStore();
+  const { isTournamentsLoaded } = useApi();
+  const {
+    setRegisterEmail,
+    setCurrentUser,
+    currentTournament,
+    isCurrentTournamentInit,
+  } = useStore();
 
   const [authState, setAuthState] = useState(AuthState.Loading);
 
@@ -44,12 +50,14 @@ export default function App() {
 
   useEffect(() => {
     if (
+      isTournamentsLoaded &&
+      isCurrentTournamentInit &&
       !currentTournament &&
       TournamentAppRoutes.includes(location.pathname as AppRoutes)
     ) {
       navigate(AppRoutes.Dashboard, { replace: true });
     }
-  }, [currentTournament]);
+  }, [isTournamentsLoaded, currentTournament]);
 
   function handleLoginClick() {
     navigate(AppRoutes.Login);

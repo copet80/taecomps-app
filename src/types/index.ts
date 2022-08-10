@@ -2,6 +2,7 @@ import { Unsubscribe } from 'firebase/firestore';
 
 export enum DbCollection {
   Tournaments = 'tournaments',
+  Entries = 'entries',
 }
 
 export type Tournament = {

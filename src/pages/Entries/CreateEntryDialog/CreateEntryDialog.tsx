@@ -74,7 +74,7 @@ function convertToFormValues(tournament: Tournament): FormValues {
   };
 }
 
-function EditTournamentDialog({
+function CreateEntryDialog({
   isVisible,
   tournament,
   onCancelClick,
@@ -267,6 +267,7 @@ function EditTournamentDialog({
                     {useStartDate && (
                       <DatePicker
                         allowInput={false}
+                        locale={locale}
                         dateFormat="d/m/Y"
                         datePickerType="single"
                         maxDate={formValues.endDate}
@@ -277,7 +278,6 @@ function EditTournamentDialog({
                         }}>
                         <DatePickerInput
                           id="startDate"
-                          locale={locale}
                           labelText="Start date"
                           placeholder="dd/mm/yyyy"
                           disabled={isSubmitting}
@@ -287,6 +287,7 @@ function EditTournamentDialog({
                     {useEndDate && (
                       <DatePicker
                         allowInput={false}
+                        locale={locale}
                         dateFormat="d/m/Y"
                         datePickerType="single"
                         minDate={formValues.startDate}
@@ -297,7 +298,6 @@ function EditTournamentDialog({
                         }}>
                         <DatePickerInput
                           id="endDate"
-                          locale={locale}
                           labelText="End date"
                           placeholder="dd/mm/yyyy"
                           disabled={isSubmitting}
@@ -316,4 +316,4 @@ function EditTournamentDialog({
   );
 }
 
-export default memo(EditTournamentDialog);
+export default memo(CreateEntryDialog);

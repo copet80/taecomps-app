@@ -24,7 +24,7 @@ export default function Dashboard() {
   if (!currentTournament) {
     return (
       <EmptyState
-        title=""
+        title="No tournament selected"
         subTitle="Please select a tournament from the menu to start managing it."
       />
     );

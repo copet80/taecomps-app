@@ -35,6 +35,7 @@ import { useApi, useStore } from '../../hooks';
 import TournamentSwitcher from '../TournamentSwitcher';
 import { Tournament } from '../../types';
 import { sortTournamentByDate } from '../../utils';
+import FullScreenSpinner from '../FullScreenSpinner';
 
 type Props = {
   onSwitchTournamentSuccess: (tournament: Tournament) => void;
@@ -48,13 +49,15 @@ function LoggedInWrapper({
   const location = useLocation();
   const [isTournamentSwitcherActive, setIsTournamentSwitcherActive] =
     useState(false);
-  const { currentTournament, setCurrentTournament } = useStore();
+  const { currentTournament, setCurrentTournament, isCurrentTournamentInit } =
+    useStore();
   const {
     tournaments,
     tournamentsById,
     listTournaments,
     createTournament,
     listRecentTournaments,
+    isTournamentsLoaded,
   } = useApi();
 
   const tournamentOptions = useMemo(() => {
@@ -116,7 +119,14 @@ function LoggedInWrapper({
 
   useEffect(() => {
     if (!currentTournament && tournaments.length > 0) {
-      setCurrentTournament(tournaments.sort(sortTournamentByDate)[0]);
+      const currentTournamentId = window.localStorage.getItem(
+        'currentTournamentId',
+      );
+      if (currentTournamentId && tournamentsById[currentTournamentId]) {
+        setCurrentTournament(tournamentsById[currentTournamentId]);
+      } else {
+        setCurrentTournament(tournaments.sort(sortTournamentByDate)[0]);
+      }
     }
   }, [tournaments]);
 
@@ -195,6 +205,10 @@ function LoggedInWrapper({
         </SideNav>
       </Header>
     );
+  }
+
+  if (!isCurrentTournamentInit || !isTournamentsLoaded) {
+    return <FullScreenSpinner />;
   }
 
   return (

@@ -3,6 +3,7 @@ import React, {
   useState,
   useContext,
   PropsWithChildren,
+  useCallback,
 } from 'react';
 
 import { User } from 'firebase/auth';
@@ -17,6 +18,7 @@ export type StoreReturnType = {
   setRegisterEmail: SetRegisterEmailFn;
   currentUser: User | undefined;
   setCurrentUser: SetCurrentUserFn;
+  isCurrentTournamentInit: boolean;
   currentTournament: Tournament | undefined;
   setCurrentTournament: SetCurrentTournamentFn;
 };
@@ -26,15 +28,27 @@ const StoreContext = createContext({ signUpEmail: '' });
 function useStoreFn(): StoreReturnType {
   const [registerEmail, setRegisterEmail] = useState('');
   const [currentUser, setCurrentUser] = useState<User | undefined>(undefined);
-  const [currentTournament, setCurrentTournament] = useState<
+  const [currentTournament, setCurrentTournamentInternal] = useState<
     Tournament | undefined
   >(undefined);
+  const [isCurrentTournamentInit, setIsCurrentTournamentInit] = useState(false);
+
+  const setCurrentTournament = useCallback((tournament?: Tournament) => {
+    setCurrentTournamentInternal(tournament);
+    if (tournament) {
+      window.localStorage.setItem('currentTournamentId', tournament.id);
+    } else {
+      window.localStorage.removeItem('currentTournamentId');
+    }
+    setIsCurrentTournamentInit(true);
+  }, []);
 
   return {
     registerEmail,
     setRegisterEmail,
     currentUser,
     setCurrentUser,
+    isCurrentTournamentInit,
     currentTournament,
     setCurrentTournament,
   };
