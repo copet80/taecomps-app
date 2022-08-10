@@ -13,6 +13,9 @@ export type Tournament = {
   endDate?: string;
   createdAt: string;
   modifiedAt?: string;
+  isArchived?: boolean;
+  archivedAt?: string;
+  unarchivedAt?: string;
   isDeleted?: boolean;
   deletedAt?: string;
 };
@@ -45,6 +48,8 @@ export type UpdateTournamentFn = (
   tournament: Tournament,
 ) => Promise<Tournament>;
 export type DeleteTournamentFn = (id: string) => Promise<boolean>;
+export type CloseTournamentFn = (id: string) => Promise<boolean>;
+export type UnarchiveTournamentFn = (id: string) => Promise<boolean>;
 export type SwitchTournamentFn = (
   tournament: Tournament,
 ) => Promise<Tournament>;

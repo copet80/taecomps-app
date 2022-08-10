@@ -22,6 +22,7 @@ import { DateTime } from 'luxon';
 
 import {
   AddRecentTournamentFn,
+  CloseTournamentFn as ArchiveTournamentFn,
   CreateEntryFn,
   CreateTournamentFn,
   DbCollection,
@@ -31,6 +32,7 @@ import {
   ListRecentTournamentsFn,
   ListTournamentsFn,
   NewEntry,
+  UnarchiveTournamentFn,
   Tournament,
   UpdateTournamentFn,
 } from '../types';
@@ -45,6 +47,8 @@ export type ApiReturnType = {
   createTournament: CreateTournamentFn;
   updateTournament: UpdateTournamentFn;
   deleteTournament: DeleteTournamentFn;
+  archiveTournament: ArchiveTournamentFn;
+  unarchiveTournament: UnarchiveTournamentFn;
   listRecentTournaments: ListRecentTournamentsFn;
   addRecentTournament: AddRecentTournamentFn;
   listEntries: ListEntriesFn;
@@ -109,11 +113,35 @@ function useApiFn(db: Firestore): ApiReturnType {
   const deleteTournament = useCallback(async (id: string): Promise<boolean> => {
     await setDoc(
       doc(db, DbCollection.Tournaments, id),
-      { isDeleted: true },
+      { isDeleted: true, deletedAt: DateTime.now().toISO() },
       { merge: true },
     );
     return true;
   }, []);
+
+  const archiveTournament = useCallback(
+    async (id: string): Promise<boolean> => {
+      await setDoc(
+        doc(db, DbCollection.Tournaments, id),
+        { isArchived: true, archivedAt: DateTime.now().toISO() },
+        { merge: true },
+      );
+      return true;
+    },
+    [],
+  );
+
+  const unarchiveTournament = useCallback(
+    async (id: string): Promise<boolean> => {
+      await setDoc(
+        doc(db, DbCollection.Tournaments, id),
+        { isArchived: false, unarchivedAt: DateTime.now().toISO() },
+        { merge: true },
+      );
+      return true;
+    },
+    [],
+  );
 
   const listRecentTournaments: ListRecentTournamentsFn = useCallback(() => {
     const recentTournamentIds: string[] = JSON.parse(
@@ -212,6 +240,8 @@ function useApiFn(db: Firestore): ApiReturnType {
     createTournament,
     updateTournament,
     deleteTournament,
+    archiveTournament,
+    unarchiveTournament,
     listRecentTournaments,
     addRecentTournament,
     listEntries,

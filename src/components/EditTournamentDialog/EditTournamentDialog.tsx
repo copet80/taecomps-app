@@ -16,14 +16,14 @@ import {
 import { DateTime } from 'luxon';
 import { object, string } from 'yup';
 
-import { Tournament } from '../../../types';
-import { useApi, useValidation } from '../../../hooks';
+import { Tournament } from '../../types';
+import { useApi, useValidation } from '../../hooks';
 import {
   TOURNAMENT_DESCRIPTION_MAX_LENGTH,
   TOURNAMENT_NAME_MAX_LENGTH,
   getLocale,
   formAction,
-} from '../../../utils';
+} from '../../utils';
 
 enum FormState {
   Updating,

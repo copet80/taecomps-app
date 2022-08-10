@@ -5,6 +5,10 @@
   display: grid;
   grid-template-rows: auto max-content;
 
+  .closedTag > .cds--tag {
+    margin: 0 !important;
+  }
+
   .tile__new {
     display: flex;
     flex-direction: column;

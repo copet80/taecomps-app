@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 
-import { ClickableTile } from '@carbon/react';
+import { ClickableTile, Tag } from '@carbon/react';
 import { CheckmarkFilled } from '@carbon/icons-react';
 import cx from 'classnames';
 
@@ -16,7 +16,8 @@ type Props = {
 };
 
 function TournamentTile({ tournament, selected, onClick }: Props) {
-  const { name, createdAt, modifiedAt, startDate, endDate } = tournament;
+  const { name, createdAt, modifiedAt, startDate, endDate, isArchived } =
+    tournament;
 
   function handleClick() {
     onClick(tournament);
@@ -33,6 +34,11 @@ function TournamentTile({ tournament, selected, onClick }: Props) {
           <div className="tournamentDate">
             {formatTournamentDate(startDate, endDate) ?? <em>Date TBC</em>}
           </div>
+          {isArchived && (
+            <span className="closedTag">
+              <Tag type="red">Closed</Tag>
+            </span>
+          )}
         </div>
         <div className="tile__secondaryInfo">
           <p>

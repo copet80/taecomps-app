@@ -39,11 +39,17 @@ import FullScreenSpinner from '../FullScreenSpinner';
 
 type Props = {
   onSwitchTournamentSuccess: (tournament: Tournament) => void;
+  onUnarchiveCurrentTournamentClick: () => void;
+  onArchiveCurrentTournamentClick: () => void;
+  onDeleteCurrentTournamentClick: () => void;
 };
 
 function LoggedInWrapper({
   children,
   onSwitchTournamentSuccess,
+  onUnarchiveCurrentTournamentClick,
+  onArchiveCurrentTournamentClick,
+  onDeleteCurrentTournamentClick,
 }: PropsWithChildren<Props>) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -108,6 +114,20 @@ function LoggedInWrapper({
             onClick={() => navigate(AppRoutes.Bracket)}>
             Bracket
           </HeaderMenuItem>
+          <HeaderMenu aria-label="Actions" menuLinkName="Actions">
+            {currentTournament.isArchived ? (
+              <HeaderMenuItem onClick={handleUnarchiveTournamentClick}>
+                Re-open tournament
+              </HeaderMenuItem>
+            ) : (
+              <HeaderMenuItem onClick={handleArchiveTournamentClick}>
+                Close tournament
+              </HeaderMenuItem>
+            )}
+            <HeaderMenuItem onClick={handleDeleteTournamentClick}>
+              Delete tournament
+            </HeaderMenuItem>
+          </HeaderMenu>
         </>
       ) : null,
     [location, currentTournament],
@@ -158,6 +178,18 @@ function LoggedInWrapper({
 
   function handleCancelSwitchTournament() {
     setIsTournamentSwitcherActive(false);
+  }
+
+  function handleArchiveTournamentClick() {
+    onArchiveCurrentTournamentClick();
+  }
+
+  function handleUnarchiveTournamentClick() {
+    onUnarchiveCurrentTournamentClick();
+  }
+
+  function handleDeleteTournamentClick() {
+    onDeleteCurrentTournamentClick();
   }
 
   function renderHeader({ isSideNavExpanded, onClickSideNavExpand }: any) {

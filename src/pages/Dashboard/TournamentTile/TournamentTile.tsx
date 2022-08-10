@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 
-import { IconButton, Stack, Tile } from '@carbon/react';
+import { IconButton, Stack, Tag, Tile } from '@carbon/react';
 import {
   Edit as EditIcon,
   TrashCan as TrashCanIcon,
@@ -18,8 +18,15 @@ type Props = {
 };
 
 function TournamentTile({ tournament, onEditClick, onDeleteClick }: Props) {
-  const { name, createdAt, description, modifiedAt, startDate, endDate } =
-    tournament;
+  const {
+    name,
+    createdAt,
+    description,
+    modifiedAt,
+    startDate,
+    endDate,
+    isArchived,
+  } = tournament;
 
   function handleEditClick() {
     onEditClick(tournament);
@@ -52,7 +59,11 @@ function TournamentTile({ tournament, onEditClick, onDeleteClick }: Props) {
                 {formatTournamentDate(startDate, endDate) ?? <em>Date TBC</em>}
               </div>
             </Stack>
-
+            {isArchived && (
+              <span className="closedTag">
+                <Tag type="red">Closed</Tag>
+              </span>
+            )}
             <p>{description || <em>No description.</em>}</p>
           </Stack>
         </div>

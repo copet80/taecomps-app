@@ -8,18 +8,17 @@ import { EmptyState, FullScreenContainer } from '../../components';
 import { useStore } from '../../hooks';
 
 import TournamentTile from './TournamentTile';
-import EditTournamentDialog from './EditTournamentDialog';
-import DeleteTournamentDialog from './DeleteTournamentDialog';
 
-enum Mode {
-  EditTournament,
-  DeleteTournament,
-}
+type Props = {
+  onEditCurrentTournamentClick: () => void;
+  onDeleteCurrentTournamentClick: () => void;
+};
 
-export default function Dashboard() {
+export default function Dashboard({
+  onEditCurrentTournamentClick,
+  onDeleteCurrentTournamentClick,
+}: Props) {
   const { currentTournament, setCurrentTournament } = useStore();
-
-  const [mode, setMode] = useState<Mode | undefined>(undefined);
 
   if (!currentTournament) {
     return (
@@ -31,28 +30,11 @@ export default function Dashboard() {
   }
 
   function handleEditTournament() {
-    setMode(Mode.EditTournament);
-  }
-
-  function handleCancelEditTournament() {
-    setMode(undefined);
-  }
-
-  function handleEditTournamentSuccess() {
-    setMode(undefined);
+    onEditCurrentTournamentClick();
   }
 
   function handleDeleteTournament() {
-    setMode(Mode.DeleteTournament);
-  }
-
-  function handleCancelDeleteTournament() {
-    setMode(undefined);
-  }
-
-  function handleDeleteTournamentSuccess() {
-    setMode(undefined);
-    setCurrentTournament(undefined);
+    onDeleteCurrentTournamentClick();
   }
 
   return (
@@ -69,18 +51,6 @@ export default function Dashboard() {
           </section>
         </Stack>
       </div>
-      <EditTournamentDialog
-        isVisible={mode === Mode.EditTournament}
-        tournament={currentTournament}
-        onCancelClick={handleCancelEditTournament}
-        onUpdateSuccess={handleEditTournamentSuccess}
-      />
-      <DeleteTournamentDialog
-        isVisible={mode === Mode.DeleteTournament}
-        tournament={currentTournament}
-        onCancelClick={handleCancelDeleteTournament}
-        onDeleteSuccess={handleDeleteTournamentSuccess}
-      />
     </FullScreenContainer>
   );
 }

@@ -1,29 +1,9 @@
-import React, { FormEvent, memo, useEffect, useMemo, useState } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
-import {
-  ContentSwitcher,
-  DatePicker,
-  DatePickerInput,
-  Form,
-  FormLabel,
-  InlineNotification,
-  Modal,
-  Stack,
-  Switch,
-  TextArea,
-  TextInput,
-} from '@carbon/react';
-import { DateTime } from 'luxon';
-import { object, string } from 'yup';
+import { InlineNotification, Modal, Stack } from '@carbon/react';
 
-import { Tournament } from '../../../types';
-import { useApi, useValidation } from '../../../hooks';
-import {
-  TOURNAMENT_DESCRIPTION_MAX_LENGTH,
-  TOURNAMENT_NAME_MAX_LENGTH,
-  getLocale,
-  formAction,
-} from '../../../utils';
+import { Tournament } from '../../types';
+import { useApi } from '../../hooks';
 
 enum FormState {
   Deleting,
@@ -91,7 +71,7 @@ function DeleteTournamentDialog({
       <div className="DeleteTournamentDialog">
         <Stack gap={6}>
           <header>
-            <h2>Delete Tourmanent</h2>
+            <h2>Delete Tournament</h2>
           </header>
           <main>
             <Stack gap={6}>

@@ -5,7 +5,14 @@ import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 
 import './styles/App.scss';
 
-import { FullScreenSpinner, LoggedInWrapper } from './components';
+import {
+  ArchiveTournamentDialog,
+  DeleteTournamentDialog,
+  EditTournamentDialog,
+  FullScreenSpinner,
+  LoggedInWrapper,
+  UnarchiveTournamentDialog,
+} from './components';
 import { useApi, useStore } from './hooks';
 import AppRoutes, { TournamentAppRoutes } from './AppRoutes';
 import { Tournament } from './types';
@@ -24,6 +31,13 @@ enum AuthState {
   NotLoggedIn,
 }
 
+enum DialogMode {
+  EditTournament,
+  DeleteTournament,
+  ArchiveTournament,
+  UnarchiveTournament,
+}
+
 export default function App() {
   const auth = getAuth();
   const navigate = useNavigate();
@@ -32,10 +46,14 @@ export default function App() {
     setRegisterEmail,
     setCurrentUser,
     currentTournament,
+    setCurrentTournament,
     isCurrentTournamentInit,
   } = useStore();
 
   const [authState, setAuthState] = useState(AuthState.Loading);
+  const [dialogMode, setDialogMode] = useState<DialogMode | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -92,6 +110,22 @@ export default function App() {
     }
   }
 
+  function handleEditCurrentTournamentClick() {
+    setDialogMode(DialogMode.EditTournament);
+  }
+
+  function handleDeleteCurrentTournament() {
+    setDialogMode(DialogMode.DeleteTournament);
+  }
+
+  function handleArchiveCurrentTournamentClick() {
+    setDialogMode(DialogMode.EditTournament);
+  }
+
+  function handleClearDialog() {
+    setDialogMode(undefined);
+  }
+
   switch (authState) {
     case AuthState.Loading:
       return <FullScreenSpinner />;
@@ -99,10 +133,31 @@ export default function App() {
     case AuthState.LoggedIn:
       return (
         <LoggedInWrapper
-          onSwitchTournamentSuccess={handleSwitchTournamentSuccess}>
+          onSwitchTournamentSuccess={handleSwitchTournamentSuccess}
+          onArchiveCurrentTournamentClick={() =>
+            setDialogMode(DialogMode.ArchiveTournament)
+          }
+          onUnarchiveCurrentTournamentClick={() =>
+            setDialogMode(DialogMode.UnarchiveTournament)
+          }
+          onDeleteCurrentTournamentClick={() =>
+            setDialogMode(DialogMode.DeleteTournament)
+          }>
           <Suspense fallback={<FullScreenSpinner />}>
             <Routes>
-              <Route path={AppRoutes.Dashboard} element={<DashboardPage />} />
+              <Route
+                path={AppRoutes.Dashboard}
+                element={
+                  <DashboardPage
+                    onEditCurrentTournamentClick={() =>
+                      setDialogMode(DialogMode.EditTournament)
+                    }
+                    onDeleteCurrentTournamentClick={() =>
+                      setDialogMode(DialogMode.DeleteTournament)
+                    }
+                  />
+                }
+              />
               <Route path={AppRoutes.Bracket} element={<BracketPage />} />
               <Route path={AppRoutes.Entries} element={<EntriesPage />} />
               <Route
@@ -112,6 +167,34 @@ export default function App() {
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>
+          {currentTournament && (
+            <>
+              <EditTournamentDialog
+                isVisible={dialogMode === DialogMode.EditTournament}
+                tournament={currentTournament}
+                onCancelClick={handleClearDialog}
+                onUpdateSuccess={handleClearDialog}
+              />
+              <DeleteTournamentDialog
+                isVisible={dialogMode === DialogMode.DeleteTournament}
+                tournament={currentTournament}
+                onCancelClick={handleClearDialog}
+                onDeleteSuccess={handleClearDialog}
+              />
+              <ArchiveTournamentDialog
+                isVisible={dialogMode === DialogMode.ArchiveTournament}
+                tournament={currentTournament}
+                onCancelClick={handleClearDialog}
+                onArchiveSuccess={handleClearDialog}
+              />
+              <UnarchiveTournamentDialog
+                isVisible={dialogMode === DialogMode.UnarchiveTournament}
+                tournament={currentTournament}
+                onCancelClick={handleClearDialog}
+                onUnarchiveSuccess={handleClearDialog}
+              />
+            </>
+          )}
         </LoggedInWrapper>
       );
 
