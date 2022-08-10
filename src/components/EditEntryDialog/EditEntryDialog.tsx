@@ -21,6 +21,7 @@ import {
   ENTRY_WEIGHT_MIN,
   ENTRY_WEIGHT_MAX,
   normalizeDropdownChange,
+  sortOptionByLabel,
 } from '../../utils';
 import { number } from 'yup';
 
@@ -77,7 +78,7 @@ function EditEntryDialog({
 
   const { clubs, belts } = tournament;
   const arClubs = useMemo(
-    () => (clubs || '').split(',').map((c) => c.trim()),
+    () => [...new Set((clubs || '').split(',').map((c) => c.trim()))],
     [clubs],
   );
   const arBelts = useMemo(
@@ -86,7 +87,11 @@ function EditEntryDialog({
   );
 
   const clubOptions = useMemo(
-    () => arClubs.map((c) => ({ label: c, value: c })),
+    () => [
+      ...new Set(
+        arClubs.map((c) => ({ label: c, value: c })).sort(sortOptionByLabel),
+      ),
+    ],
     [arClubs],
   );
   const beltOptions = useMemo(

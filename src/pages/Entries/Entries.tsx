@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import React, { useEffect, useState } from 'react';
 
 import {
+  DeleteEntryDialog,
   EditEntryDialog,
   EmptyState,
   FullScreenContainer,
@@ -9,7 +10,7 @@ import {
 } from '../../components';
 import { useApi, useStore } from '../../hooks';
 import { Entry } from '../../types';
-import { ENTRY_AGE_MIN, ENTRY_WEIGHT_MIN } from '../../utils';
+import { ENTRY_AGE_MIN, ENTRY_WEIGHT_MIN, sortEntryByName } from '../../utils';
 import EntryTable from './EntryTable';
 
 enum Mode {
@@ -33,7 +34,8 @@ function createNewEntry(tournamentId: string): Entry {
 
 export default function Entries() {
   const { currentTournament } = useStore();
-  const { entriesByTournamentId, listEntries } = useApi();
+  const { entriesByTournamentId, listEntries, updateEntry, deleteEntry } =
+    useApi();
 
   const [mode, setMode] = useState<Mode | undefined>(Mode.Loading);
 
@@ -50,7 +52,7 @@ export default function Entries() {
     );
   }
 
-  const [entryToEdit, setEntryToEdit] = useState<Entry>(
+  const [entryToAction, setEntryToAction] = useState<Entry>(
     createNewEntry(currentTournament.id),
   );
 
@@ -66,7 +68,7 @@ export default function Entries() {
 
   function handleCreateEntryClick() {
     if (currentTournament) {
-      setEntryToEdit(createNewEntry(currentTournament.id));
+      setEntryToAction(createNewEntry(currentTournament.id));
       setMode(Mode.EditEntry);
     }
   }
@@ -77,6 +79,16 @@ export default function Entries() {
 
   if (mode === Mode.Loading || !entries) {
     return <FullScreenSpinner />;
+  }
+
+  function handleEditEntryClick(entry: Entry) {
+    setEntryToAction(entry);
+    setMode(Mode.EditEntry);
+  }
+
+  function handleDeleteEntryClick(entry: Entry) {
+    setEntryToAction(entry);
+    setMode(Mode.DeleteEntry);
   }
 
   function renderEmptyState() {
@@ -93,7 +105,12 @@ export default function Entries() {
 
   function renderTable() {
     return (
-      <EntryTable entries={entries} onCreateClick={handleCreateEntryClick} />
+      <EntryTable
+        entries={entries.sort(sortEntryByName)}
+        onCreateClick={handleCreateEntryClick}
+        onEditClick={handleEditEntryClick}
+        onDeleteClick={handleDeleteEntryClick}
+      />
     );
   }
 
@@ -104,9 +121,15 @@ export default function Entries() {
         <EditEntryDialog
           isVisible={mode === Mode.EditEntry}
           tournament={currentTournament}
-          entry={entryToEdit}
+          entry={entryToAction}
           onCancelClick={handleClearDialog}
           onUpdateSuccess={handleClearDialog}
+        />
+        <DeleteEntryDialog
+          isVisible={mode === Mode.DeleteEntry}
+          entry={entryToAction}
+          onCancelClick={handleClearDialog}
+          onDeleteSuccess={handleClearDialog}
         />
       </div>
     </FullScreenContainer>

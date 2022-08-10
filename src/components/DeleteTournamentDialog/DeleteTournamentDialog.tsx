@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 
 import { InlineNotification, Modal, Stack } from '@carbon/react';
 
@@ -30,6 +30,16 @@ function DeleteTournamentDialog({
     () => formState === FormState.Deleting,
     [formState],
   );
+
+  useEffect(() => {
+    if (isVisible) {
+      clearFormState();
+    }
+  }, [isVisible]);
+
+  function clearFormState() {
+    setFormState(undefined);
+  }
 
   async function handleDelete() {
     setFormState(FormState.Deleting);

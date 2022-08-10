@@ -65,4 +65,4 @@ export type CreateEntryFn = (
   newEntry: NewEntry,
 ) => Promise<Entry>;
 export type UpdateEntryFn = (entry: Entry) => Promise<Entry>;
-export type DeleteEntryFn = (id: string) => Promise<boolean>;
+export type DeleteEntryFn = (entry: Entry) => Promise<boolean>;

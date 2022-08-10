@@ -2,32 +2,32 @@ import React, { memo, useEffect, useMemo, useState } from 'react';
 
 import { InlineNotification, Modal, Stack } from '@carbon/react';
 
-import { Tournament } from '../../types';
+import { Entry } from '../../types';
 import { useApi } from '../../hooks';
 
 enum FormState {
-  Unarchiving,
-  UnarchiveError,
+  Deleting,
+  DeleteError,
 }
 
 type Props = {
   isVisible?: boolean;
-  tournament: Tournament;
+  entry: Entry;
   onCancelClick: () => void;
-  onUnarchiveSuccess: () => void;
+  onDeleteSuccess: () => void;
 };
 
-function UnarchiveTournamentDialog({
+function DeleteEntryDialog({
   isVisible,
-  tournament,
+  entry,
   onCancelClick,
-  onUnarchiveSuccess,
+  onDeleteSuccess: onDeleteSuccess,
 }: Props) {
-  const { unarchiveTournament } = useApi();
+  const { deleteEntry } = useApi();
   const [formState, setFormState] = useState<FormState | undefined>(undefined);
 
   const isSubmitting = useMemo(
-    () => formState === FormState.Unarchiving,
+    () => formState === FormState.Deleting,
     [formState],
   );
 
@@ -41,24 +41,24 @@ function UnarchiveTournamentDialog({
     setFormState(undefined);
   }
 
-  async function handleUnarchive() {
-    setFormState(FormState.Unarchiving);
+  async function handleDelete() {
+    setFormState(FormState.Deleting);
 
     try {
-      await unarchiveTournament(tournament.id);
-      onUnarchiveSuccess();
+      await deleteEntry(entry);
+      onDeleteSuccess();
     } catch (error) {
-      setFormState(FormState.UnarchiveError);
+      setFormState(FormState.DeleteError);
     }
   }
 
   function renderNotifications() {
     switch (formState) {
-      case FormState.UnarchiveError:
+      case FormState.DeleteError:
         return (
           <InlineNotification
             kind="error"
-            subtitle="There is a problem reopening this tournament."
+            subtitle="There is a problem deleting this entry."
             hideCloseButton
             lowContrast={false}
           />
@@ -71,26 +71,30 @@ function UnarchiveTournamentDialog({
   return (
     <Modal
       open={isVisible}
-      primaryButtonText="Reopen tournament"
+      danger
+      primaryButtonText="Delete permanently"
       secondaryButtonText="Cancel"
       primaryButtonDisabled={isSubmitting}
-      onRequestSubmit={handleUnarchive}
+      onRequestSubmit={handleDelete}
       onRequestClose={onCancelClick}
       onSecondarySubmit={onCancelClick}>
-      <div className="UnarchiveTournamentDialog">
+      <div className="DeleteEntryDialog">
         <Stack gap={6}>
           <header>
-            <h2>Reopen Tournament</h2>
+            <h2>Delete Entry</h2>
           </header>
           <main>
             <Stack gap={6}>
               <Stack gap={2}>
-                <p>You are about to reopen the following tournament:</p>
-                <h4>{tournament.name}</h4>
+                <p>
+                  You are about to delete the entry for the following
+                  participant permanently:
+                </p>
+                <h4>{entry.name}</h4>
               </Stack>
               <p>
-                Once reopened, you'll be able to view and edit its entries and
-                bracket. Are you sure?
+                Once deleted, the participant can no longer participate in the
+                tournament. Are you sure?
               </p>
             </Stack>
           </main>
@@ -101,4 +105,4 @@ function UnarchiveTournamentDialog({
   );
 }
 
-export default memo(UnarchiveTournamentDialog);
+export default memo(DeleteEntryDialog);
