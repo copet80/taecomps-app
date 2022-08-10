@@ -8,6 +8,7 @@ import {
   FullScreenSpinner,
 } from '../../components';
 import { useApi, useStore } from '../../hooks';
+import TournamentBracket from './TournamentBracket/TournamentBracket';
 
 enum Mode {
   Loading,
@@ -66,7 +67,13 @@ export default function Bracket() {
   }
 
   function renderBracket() {
-    return <h3>Bracket</h3>;
+    if (!currentTournament) {
+      return null;
+    }
+
+    return (
+      <TournamentBracket tournament={currentTournament} entries={entries} />
+    );
   }
 
   return (
