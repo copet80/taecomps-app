@@ -1,11 +1,79 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AppRoutes from '../../AppRoutes';
 
-import { FullScreenContainer } from '../../components';
+import {
+  EmptyState,
+  FullScreenContainer,
+  FullScreenSpinner,
+} from '../../components';
+import { useApi, useStore } from '../../hooks';
+
+enum Mode {
+  Loading,
+  EditBracket,
+  DeleteBracket,
+}
 
 export default function Bracket() {
+  const navigate = useNavigate();
+  const { currentTournament } = useStore();
+  const { entriesByTournamentId, listEntries } = useApi();
+
+  const [mode, setMode] = useState<Mode | undefined>(Mode.Loading);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  if (!currentTournament) {
+    return (
+      <EmptyState
+        title="No tournament selected"
+        subTitle="Please select a tournament from the menu to start managing it."
+      />
+    );
+  }
+
+  async function fetchData() {
+    if (currentTournament) {
+      setMode(Mode.Loading);
+      await listEntries(currentTournament.id);
+      setMode(undefined);
+    }
+  }
+
+  const entries = entriesByTournamentId[currentTournament.id];
+
+  if (mode === Mode.Loading || !entries) {
+    return <FullScreenSpinner />;
+  }
+
+  function handleEmptyStateCtaClick() {
+    navigate(AppRoutes.Entries);
+  }
+
+  function renderEmptyState() {
+    return (
+      <EmptyState
+        title="No entries yet"
+        subTitle="This tournament has no entries yet. Let's start creating a new entry!"
+        isCtaVisible
+        ctaLabel="Go to Entries"
+        onCtaClick={handleEmptyStateCtaClick}
+      />
+    );
+  }
+
+  function renderBracket() {
+    return <h3>Bracket</h3>;
+  }
+
   return (
     <FullScreenContainer>
-      <div className="PageContainer BracketContainer"></div>
+      <div className="PageContainer BracketContainer">
+        {entries.length === 0 ? renderEmptyState() : renderBracket()}
+      </div>
     </FullScreenContainer>
   );
 }
