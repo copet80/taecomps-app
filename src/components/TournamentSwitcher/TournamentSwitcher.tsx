@@ -122,7 +122,7 @@ export default function TournamentSwitcher({
   }
 
   async function handleCreate() {
-    const isValid = await validate({ tournamentName });
+    const isValid = await validate({ tournamentName: tournamentName.trim() });
 
     if (!isValid) {
       return;
@@ -131,7 +131,7 @@ export default function TournamentSwitcher({
     setFormState(FormState.Creating);
 
     try {
-      const newTournament = await createCallback(tournamentName);
+      const newTournament = await createCallback(tournamentName.trim());
       onCreateSuccess(newTournament);
       clearFormState();
     } catch (error) {

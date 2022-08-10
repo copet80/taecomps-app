@@ -39,6 +39,7 @@ import FullScreenSpinner from '../FullScreenSpinner';
 
 type Props = {
   onSwitchTournamentSuccess: (tournament: Tournament) => void;
+  onEditCurrentTournamentClick: () => void;
   onUnarchiveCurrentTournamentClick: () => void;
   onArchiveCurrentTournamentClick: () => void;
   onDeleteCurrentTournamentClick: () => void;
@@ -47,6 +48,7 @@ type Props = {
 function LoggedInWrapper({
   children,
   onSwitchTournamentSuccess,
+  onEditCurrentTournamentClick,
   onUnarchiveCurrentTournamentClick,
   onArchiveCurrentTournamentClick,
   onDeleteCurrentTournamentClick,
@@ -115,6 +117,9 @@ function LoggedInWrapper({
             Bracket
           </HeaderMenuItem>
           <HeaderMenu aria-label="Actions" menuLinkName="Actions">
+            <HeaderMenuItem onClick={handleEditTournamentClick}>
+              Edit tournament
+            </HeaderMenuItem>
             {currentTournament.isArchived ? (
               <HeaderMenuItem onClick={handleUnarchiveTournamentClick}>
                 Re-open tournament
@@ -178,6 +183,10 @@ function LoggedInWrapper({
 
   function handleCancelSwitchTournament() {
     setIsTournamentSwitcherActive(false);
+  }
+
+  function handleEditTournamentClick() {
+    onEditCurrentTournamentClick();
   }
 
   function handleArchiveTournamentClick() {

@@ -74,7 +74,7 @@ function convertToFormValues(tournament: Tournament): FormValues {
   };
 }
 
-function CreateEntryDialog({
+function EditTournamentDialog({
   isVisible,
   tournament,
   onCancelClick,
@@ -213,7 +213,7 @@ function CreateEntryDialog({
       onRequestSubmit={handleUpdate}
       onRequestClose={onCancelClick}
       onSecondarySubmit={onCancelClick}>
-      <div className="EditTournamentDialog">
+      <div className="TournamentDetailsContainer">
         <Stack gap={6}>
           <header>
             <h2>Tournament Details</h2>
@@ -316,4 +316,4 @@ function CreateEntryDialog({
   );
 }
 
-export default memo(CreateEntryDialog);
+export default memo(EditTournamentDialog);

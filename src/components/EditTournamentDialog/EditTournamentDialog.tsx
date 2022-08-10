@@ -43,6 +43,8 @@ type FormValues = {
   startDate: Date | null;
   endDate: Date | null;
   dateMode: DateMode;
+  clubs: string;
+  belts: string;
 };
 
 type Props = {
@@ -64,6 +66,8 @@ function convertToFormValues(tournament: Tournament): FormValues {
   return {
     name: tournament.name,
     description: tournament.description || '',
+    clubs: tournament.clubs || '',
+    belts: tournament.belts || '',
     startDate: tournament.startDate
       ? DateTime.fromISO(tournament.startDate).toJSDate()
       : null,
@@ -159,7 +163,13 @@ function EditTournamentDialog({
   }
 
   async function handleUpdate() {
-    const isValid = await validate(formValues);
+    const isValid = await validate({
+      ...formValues,
+      name: formValues.name.trim(),
+      description: formValues.description.trim(),
+      clubs: formValues.clubs.trim(),
+      belts: formValues.belts.trim(),
+    });
 
     if (!isValid) {
       return;
@@ -170,8 +180,10 @@ function EditTournamentDialog({
     try {
       const updatedTournament = {
         ...tournament,
-        name: formValues.name,
-        description: formValues.description,
+        name: formValues.name.trim(),
+        description: formValues.description.trim(),
+        clubs: formValues.clubs.trim(),
+        belts: formValues.belts.trim(),
         startDate:
           useStartDate && formValues.startDate
             ? DateTime.fromJSDate(formValues.startDate).toISODate()
@@ -194,7 +206,7 @@ function EditTournamentDialog({
         return (
           <InlineNotification
             kind="error"
-            subtitle="There is a problem updating this tournament."
+            subtitle="There is a problem saving this tournament."
             hideCloseButton
             lowContrast={false}
           />
@@ -236,6 +248,7 @@ function EditTournamentDialog({
                   }}
                 />
                 <TextArea
+                  rows={3}
                   maxLength={TOURNAMENT_DESCRIPTION_MAX_LENGTH}
                   id="description"
                   labelText="Description / notes"
@@ -246,11 +259,35 @@ function EditTournamentDialog({
                     updateFormValue('description', event.currentTarget.value);
                   }}
                 />
+                <TextArea
+                  rows={3}
+                  id="clubs"
+                  labelText="Participating clubs"
+                  value={formValues.clubs}
+                  disabled={isSubmitting}
+                  helperText="Separate entries by commas, e.g. Club 1, Club 2, Club 3"
+                  {...validationProps('clubs')}
+                  onChange={(event: FormEvent<HTMLTextAreaElement>) => {
+                    updateFormValue('clubs', event.currentTarget.value);
+                  }}
+                />
+                <TextArea
+                  rows={3}
+                  id="belts"
+                  labelText="Available belt colors"
+                  value={formValues.belts}
+                  disabled={isSubmitting}
+                  helperText="Separate entries by commas, e.g. Yellow, Blue, Red, Black"
+                  {...validationProps('belts')}
+                  onChange={(event: FormEvent<HTMLTextAreaElement>) => {
+                    updateFormValue('belts', event.currentTarget.value);
+                  }}
+                />
                 <Stack gap={3}>
                   <FormLabel>Tournament dates</FormLabel>
                   <ContentSwitcher
+                    className={isSubmitting ? 'disabled' : undefined}
                     selectedIndex={dateMode}
-                    disabled={isSubmitting}
                     onChange={({ name }: { name: DateMode }) => {
                       updateFormValue('dateMode', name);
                     }}>

@@ -35,6 +35,7 @@ import {
   UnarchiveTournamentFn,
   Tournament,
   UpdateTournamentFn,
+  UpdateEntryFn,
 } from '../types';
 import { sortTournamentByDate } from '../utils';
 
@@ -52,6 +53,8 @@ export type ApiReturnType = {
   listRecentTournaments: ListRecentTournamentsFn;
   addRecentTournament: AddRecentTournamentFn;
   listEntries: ListEntriesFn;
+  createEntry: CreateEntryFn;
+  updateEntry: UpdateEntryFn;
 };
 
 const MAX_RECENT_TOURNAMENTS = 3;
@@ -178,7 +181,7 @@ function useApiFn(db: Firestore): ApiReturnType {
   );
 
   const listEntries = useCallback((tournamentId: string): Unsubscribe => {
-    const tournamentDoc = doc(db, DbCollection.Entries, tournamentId);
+    const tournamentDoc = doc(db, DbCollection.Tournaments, tournamentId);
     const q = query(
       collection(tournamentDoc, DbCollection.Entries),
       where('isDeleted', '==', false),
@@ -195,32 +198,28 @@ function useApiFn(db: Firestore): ApiReturnType {
     });
   }, []);
 
-  // const createEntry: CreateEntryFn = useCallback(
-  //   async (tournamentId: string, newEntry: NewEntry): Promise<Entry> => {
-  //     const id = uuid();
-  //     const entry = {
-  //       tournamentId,
-  //       id,
-  //       ...newEntry,
-  //       createdAt: DateTime.now().toISO(),
-  //       isDeleted: false,
-  //     };
-  //     await setDoc(doc(db, DbCollection.Entries, id), entry);
-  //     return entry;
-  //   },
-  //   [],
-  // );
+  const createEntry: CreateEntryFn = useCallback(
+    async (tournamentId: string, newEntry: NewEntry): Promise<Entry> => {
+      const tournamentDoc = doc(db, DbCollection.Tournaments, tournamentId);
+      const id = uuid();
+      const entry: Entry = {
+        tournamentId,
+        id,
+        ...newEntry,
+        createdAt: DateTime.now().toISO(),
+        isDeleted: false,
+      };
+      await setDoc(doc(tournamentDoc, DbCollection.Entries, id), entry);
+      return entry;
+    },
+    [],
+  );
 
-  // const updateTournament = useCallback(
-  //   async (tournament: Tournament): Promise<Tournament> => {
-  //     await setDoc(
-  //       doc(db, DbCollection.Tournaments, tournament.id),
-  //       tournament,
-  //     );
-  //     return tournament;
-  //   },
-  //   [],
-  // );
+  const updateEntry = useCallback(async (entry: Entry): Promise<Entry> => {
+    const tournamentDoc = doc(db, DbCollection.Tournaments, entry.tournamentId);
+    await setDoc(doc(tournamentDoc, DbCollection.Entries, entry.id), entry);
+    return entry;
+  }, []);
 
   // const deleteTournament = useCallback(async (id: string): Promise<boolean> => {
   //   await setDoc(
@@ -245,6 +244,8 @@ function useApiFn(db: Firestore): ApiReturnType {
     listRecentTournaments,
     addRecentTournament,
     listEntries,
+    createEntry,
+    updateEntry,
   };
 }
 

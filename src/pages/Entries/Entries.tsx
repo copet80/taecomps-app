@@ -1,24 +1,37 @@
+import { DateTime } from 'luxon';
 import React, { useEffect, useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
-import AppRoutes from '../../AppRoutes';
-
 import {
+  EditEntryDialog,
   EmptyState,
   FullScreenContainer,
   FullScreenSpinner,
 } from '../../components';
 import { useApi, useStore } from '../../hooks';
+import { Entry } from '../../types';
+import { ENTRY_AGE_MIN, ENTRY_WEIGHT_MIN } from '../../utils';
+import EntryTable from './EntryTable';
 
 enum Mode {
   Loading,
-  CreateEntry,
   EditEntry,
   DeleteEntry,
 }
 
+function createNewEntry(tournamentId: string): Entry {
+  return {
+    id: '',
+    tournamentId,
+    name: '',
+    age: ENTRY_AGE_MIN,
+    weight: ENTRY_WEIGHT_MIN,
+    belt: '',
+    club: '',
+    createdAt: DateTime.now().toISO(),
+  };
+}
+
 export default function Entries() {
-  const navigate = useNavigate();
   const { currentTournament } = useStore();
   const { entriesByTournamentId, listEntries } = useApi();
 
@@ -37,6 +50,10 @@ export default function Entries() {
     );
   }
 
+  const [entryToEdit, setEntryToEdit] = useState<Entry>(
+    createNewEntry(currentTournament.id),
+  );
+
   async function fetchData() {
     if (currentTournament) {
       setMode(Mode.Loading);
@@ -48,14 +65,21 @@ export default function Entries() {
   const entries = entriesByTournamentId[currentTournament.id];
 
   function handleCreateEntryClick() {
-    setMode(Mode.CreateEntry);
+    if (currentTournament) {
+      setEntryToEdit(createNewEntry(currentTournament.id));
+      setMode(Mode.EditEntry);
+    }
   }
 
-  if (mode === Mode.Loading) {
+  function handleClearDialog() {
+    setMode(undefined);
+  }
+
+  if (mode === Mode.Loading || !entries) {
     return <FullScreenSpinner />;
   }
 
-  if (!entries || entries.length === 0) {
+  function renderEmptyState() {
     return (
       <EmptyState
         title="No entries yet"
@@ -67,9 +91,24 @@ export default function Entries() {
     );
   }
 
+  function renderTable() {
+    return (
+      <EntryTable entries={entries} onCreateClick={handleCreateEntryClick} />
+    );
+  }
+
   return (
     <FullScreenContainer>
-      <div className="PageContainer EntriesContainer"></div>
+      <div className="PageContainer EntriesContainer">
+        {entries.length === 0 ? renderEmptyState() : renderTable()}
+        <EditEntryDialog
+          isVisible={mode === Mode.EditEntry}
+          tournament={currentTournament}
+          entry={entryToEdit}
+          onCancelClick={handleClearDialog}
+          onUpdateSuccess={handleClearDialog}
+        />
+      </div>
     </FullScreenContainer>
   );
 }

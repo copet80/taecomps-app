@@ -1,5 +1,6 @@
 export { default as ArchiveTournamentDialog } from './ArchiveTournamentDialog';
 export { default as DeleteTournamentDialog } from './DeleteTournamentDialog';
+export { default as EditEntryDialog } from './EditEntryDialog';
 export { default as EditTournamentDialog } from './EditTournamentDialog';
 export { default as EmptyState } from './EmptyState';
 export { default as FullScreenContainer } from './FullScreenContainer';

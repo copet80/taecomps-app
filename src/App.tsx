@@ -110,18 +110,6 @@ export default function App() {
     }
   }
 
-  function handleEditCurrentTournamentClick() {
-    setDialogMode(DialogMode.EditTournament);
-  }
-
-  function handleDeleteCurrentTournament() {
-    setDialogMode(DialogMode.DeleteTournament);
-  }
-
-  function handleArchiveCurrentTournamentClick() {
-    setDialogMode(DialogMode.EditTournament);
-  }
-
   function handleClearDialog() {
     setDialogMode(undefined);
   }
@@ -133,6 +121,9 @@ export default function App() {
     case AuthState.LoggedIn:
       return (
         <LoggedInWrapper
+          onEditCurrentTournamentClick={() =>
+            setDialogMode(DialogMode.EditTournament)
+          }
           onSwitchTournamentSuccess={handleSwitchTournamentSuccess}
           onArchiveCurrentTournamentClick={() =>
             setDialogMode(DialogMode.ArchiveTournament)
