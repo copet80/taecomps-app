@@ -35,8 +35,7 @@ function createNewEntry(tournamentId: string): Entry {
 
 export default function Entries() {
   const { currentTournament } = useStore();
-  const { entriesByTournamentId, listEntries, updateEntry, deleteEntry } =
-    useApi();
+  const { entriesByTournamentId, listEntries } = useApi();
 
   const [mode, setMode] = useState<Mode | undefined>(Mode.Loading);
 

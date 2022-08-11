@@ -72,12 +72,16 @@ function EntryTable({
     [entries],
   );
 
+  const filteredEntries = useMemo(() => {
+    return entries.filter((entry) =>
+      entry.name.toLowerCase().includes(searchQuery),
+    );
+  }, [entries, searchQuery]);
+
   const rows = useMemo(() => {
     const { page, pageSize } = pagination;
-    return entries
-      .filter((entry) => entry.name.toLowerCase().includes(searchQuery))
-      .slice((page - 1) * pageSize, page * pageSize);
-  }, [entries, searchQuery, pagination]);
+    return filteredEntries.slice((page - 1) * pageSize, page * pageSize);
+  }, [filteredEntries, pagination]);
 
   function handleSearchChange(event: FormEvent<HTMLInputElement>) {
     setSearchQuery(
@@ -156,7 +160,7 @@ function EntryTable({
           </TableContainer>
         )}
       </DataTable>
-      {entries.length > 10 && (
+      {filteredEntries.length > 10 && (
         <Pagination
           backwardText="Previous page"
           forwardText="Next page"
@@ -168,7 +172,7 @@ function EntryTable({
           page={pagination.page}
           pageSize={pagination.pageSize}
           pageSizes={[10, 25, 50, 75, 100]}
-          totalItems={entries.length}
+          totalItems={filteredEntries.length}
           onChange={handlePaginationChange}
         />
       )}

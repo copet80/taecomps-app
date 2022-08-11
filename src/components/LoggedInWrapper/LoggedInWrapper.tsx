@@ -36,6 +36,7 @@ import TournamentSwitcher from '../TournamentSwitcher';
 import { Tournament } from '../../types';
 import { sortTournamentByDate } from '../../utils';
 import FullScreenSpinner from '../FullScreenSpinner';
+import AppLogo from '../AppLogo';
 
 type Props = {
   onSwitchTournamentSuccess: (tournament: Tournament) => void;
@@ -211,7 +212,7 @@ function LoggedInWrapper({
           isActive={isSideNavExpanded}
         />
         <HeaderName href="/" prefix="">
-          Taecomps
+          <AppLogo size="sm" />
         </HeaderName>
         <HeaderNavigation aria-label="Current Tournament">
           {tournamentOptions}
