@@ -1,6 +1,14 @@
 import React, { memo } from 'react';
 
-import { IconButton, Stack, Tag, Tile } from '@carbon/react';
+import {
+  ExpandableTile,
+  FormLabel,
+  IconButton,
+  Stack,
+  Tag,
+  TileAboveTheFoldContent,
+  TileBelowTheFoldContent,
+} from '@carbon/react';
 import {
   Edit as EditIcon,
   TrashCan as TrashCanIcon,
@@ -22,6 +30,8 @@ function TournamentTile({ tournament, onEditClick, onDeleteClick }: Props) {
     name,
     createdAt,
     description,
+    belts,
+    clubs,
     modifiedAt,
     startDate,
     endDate,
@@ -36,42 +46,62 @@ function TournamentTile({ tournament, onEditClick, onDeleteClick }: Props) {
   }
 
   return (
-    <Tile>
-      <div className="TournamentTile">
-        <div className="tile__mainInfo">
-          <div className="tile__action">
-            <IconButton
-              kind="ghost"
-              label="Delete tournament"
-              onClick={handleDeleteClick}>
-              <TrashCanIcon />
-            </IconButton>
-            <IconButton
-              label="Edit tournament details"
-              onClick={handleEditClick}>
-              <EditIcon />
-            </IconButton>
-          </div>
-          <Stack gap={6}>
-            <Stack gap={1}>
-              <h5>{name}</h5>
-              <div className="tournamentDate">
-                {formatTournamentDate(startDate, endDate) ?? <em>Date TBC</em>}
-              </div>
+    <ExpandableTile
+      tileCollapsedIconText="Expand tile"
+      tileExpandedIconText="Collapse tile">
+      <TileAboveTheFoldContent>
+        <div className="TournamentTile__AboveFold">
+          <div className="tile__mainInfo">
+            <div className="tile__action">
+              <IconButton
+                kind="ghost"
+                label="Delete tournament"
+                onClick={handleDeleteClick}>
+                <TrashCanIcon />
+              </IconButton>
+              <IconButton
+                label="Edit tournament details"
+                onClick={handleEditClick}>
+                <EditIcon />
+              </IconButton>
+            </div>
+            <Stack gap={6}>
+              <Stack gap={1}>
+                <h5>{name}</h5>
+                <div className="tournamentDate">
+                  {formatTournamentDate(startDate, endDate) ?? (
+                    <em>Date TBC</em>
+                  )}
+                </div>
+              </Stack>
+              {isArchived && (
+                <span className="closedTag">
+                  <Tag type="red">Closed</Tag>
+                </span>
+              )}
+              <p>{description || <em>No description.</em>}</p>
             </Stack>
-            {isArchived && (
-              <span className="closedTag">
-                <Tag type="red">Closed</Tag>
-              </span>
-            )}
-            <p>{description || <em>No description.</em>}</p>
+          </div>
+          <div className="tile__secondaryInfo">
+            <p>Last modified at {formatDateTime(modifiedAt || createdAt)}</p>
+          </div>
+        </div>
+      </TileAboveTheFoldContent>
+      <TileBelowTheFoldContent>
+        <div className="TournamentTile__BelowFold">
+          <Stack gap={6}>
+            <Stack gap={3}>
+              <FormLabel>Participating clubs</FormLabel>
+              <p>{clubs}</p>
+            </Stack>
+            <Stack gap={3}>
+              <FormLabel>Belts</FormLabel>
+              <p>{belts}</p>
+            </Stack>
           </Stack>
         </div>
-        <div className="tile__secondaryInfo">
-          <p>Last modified at {formatDateTime(modifiedAt || createdAt)}</p>
-        </div>
-      </div>
-    </Tile>
+      </TileBelowTheFoldContent>
+    </ExpandableTile>
   );
 }
 

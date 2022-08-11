@@ -1,7 +1,7 @@
 @import '../../../styles/App.scss';
 
-.TournamentTile {
-  height: 100%;
+.TournamentTile__AboveFold {
+  height: 300px;
   display: grid;
   grid-template-rows: auto max-content;
 
@@ -36,4 +36,10 @@
     top: 0;
     right: 0;
   }
+}
+
+.TournamentTile__BelowFold {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $gray-20;
 }
