@@ -22,11 +22,14 @@ export type Tournament = {
   deletedAt?: string;
 };
 
+export type Gender = '' | 'Male' | 'Female';
+
 export type Entry = {
   id: string;
   tournamentId: string;
   name: string;
   age: number;
+  gender: Gender;
   belt: string;
   club: string;
   weight: number;
@@ -36,7 +39,10 @@ export type Entry = {
   deletedAt?: string;
 };
 
-export type NewEntry = Pick<Entry, 'name' | 'age' | 'belt' | 'club' | 'weight'>;
+export type NewEntry = Pick<
+  Entry,
+  'name' | 'age' | 'gender' | 'belt' | 'club' | 'weight'
+>;
 
 export type Division = {
   id: string;

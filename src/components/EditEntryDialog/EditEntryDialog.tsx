@@ -11,7 +11,7 @@ import {
 } from '@carbon/react';
 import { object, string } from 'yup';
 
-import { Entry, Tournament } from '../../types';
+import { Entry, Gender, Tournament } from '../../types';
 import { useApi, useValidation } from '../../hooks';
 import {
   formAction,
@@ -43,6 +43,7 @@ type FormValues = {
   belt: string;
   club: string;
   weight: number;
+  gender: Gender;
 };
 
 type Props = {
@@ -54,8 +55,8 @@ type Props = {
 };
 
 function convertToFormValues(entry: Entry): FormValues {
-  const { name, age, belt, club, weight } = entry;
-  return { name, age, belt, club, weight };
+  const { name, age, belt, club, weight, gender = '' } = entry;
+  return { name, age, belt, club, weight, gender };
 }
 
 function EditEntryDialog({
@@ -98,6 +99,10 @@ function EditEntryDialog({
     () => arBelts.map((b) => ({ label: b, value: b })),
     [arBelts],
   );
+  const genderOptions = useMemo(
+    () => ['Male', 'Female'].map((g) => ({ label: g, value: g })),
+    [],
+  );
 
   const updateSchema = useMemo(() => {
     return object({
@@ -134,6 +139,11 @@ function EditEntryDialog({
           key: 'max',
           message: `Please enter between ${ENTRY_WEIGHT_MIN} and ${ENTRY_WEIGHT_MAX}`,
         })),
+      gender: string().required(() => ({
+        field: 'gender',
+        key: 'required',
+        message: `Please select the participant's gender`,
+      })),
       belt: string().oneOf(arBelts, () => ({
         field: 'belt',
         key: 'oneOf',
@@ -190,6 +200,7 @@ function EditEntryDialog({
         name: formValues.name,
         age: formValues.age,
         weight: formValues.weight,
+        gender: formValues.gender,
         belt: formValues.belt,
         club: formValues.club,
       };
@@ -200,7 +211,6 @@ function EditEntryDialog({
       }
       onUpdateSuccess(entryToSave);
     } catch (error) {
-      console.log(error);
       setFormState(FormState.UpdateError);
     }
   }
@@ -269,23 +279,41 @@ function EditEntryDialog({
                     updateFormValue('club', selectedItem.value);
                   }}
                 />
-                <Dropdown
-                  id="belt"
-                  titleText="Belt color"
-                  label="Select a belt color"
-                  items={beltOptions}
-                  selectedItem={formValues.belt}
-                  disabled={isSubmitting}
-                  {...validationProps('belt')}
-                  onChange={({
-                    selectedItem,
-                  }: {
-                    selectedItem: { value: string };
-                  }) => {
-                    updateFormValue('belt', selectedItem.value);
-                  }}
-                />
-                <Stack gap={6} orientation="horizontal">
+                <div className="TwoColumnsDesktop">
+                  <Dropdown
+                    id="gender"
+                    titleText="Participant's gender"
+                    label="Select a gender"
+                    items={genderOptions}
+                    selectedItem={formValues.gender}
+                    disabled={isSubmitting}
+                    {...validationProps('gender')}
+                    onChange={({
+                      selectedItem,
+                    }: {
+                      selectedItem: { value: string };
+                    }) => {
+                      updateFormValue('gender', selectedItem.value);
+                    }}
+                  />
+                  <Dropdown
+                    id="belt"
+                    titleText="Belt color"
+                    label="Select a belt color"
+                    items={beltOptions}
+                    selectedItem={formValues.belt}
+                    disabled={isSubmitting}
+                    {...validationProps('belt')}
+                    onChange={({
+                      selectedItem,
+                    }: {
+                      selectedItem: { value: string };
+                    }) => {
+                      updateFormValue('belt', selectedItem.value);
+                    }}
+                  />
+                </div>
+                <div className="TwoColumnsDesktop">
                   <NumberInput
                     id="age"
                     min={ENTRY_AGE_MIN}
@@ -312,8 +340,7 @@ function EditEntryDialog({
                       updateFormValue('weight', +value);
                     })}
                   />
-                </Stack>
-                {renderNotifications()}
+                </div>
               </Stack>
             </Form>
           </main>

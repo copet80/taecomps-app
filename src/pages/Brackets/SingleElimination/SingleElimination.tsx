@@ -35,7 +35,7 @@ function TournamentBracket({ tournament, entries }: Props) {
             roundHeader: { backgroundColor: '#AAA', height: 0 },
             connectorColor: colors.gray40,
             connectorColorHighlight: colors.black,
-            boxHeight: 150,
+            boxHeight: 130,
           },
         }}
         svgWrapper={({ children, ...props }) => (

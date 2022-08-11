@@ -27,8 +27,8 @@ const colors: Colors = {
 };
 
 const sizes: Sizes = {
-  gold: 50,
-  silver: 40,
+  gold: 40,
+  silver: 35,
   bronze: 30,
 };
 
@@ -40,8 +40,8 @@ export default function Medal({ color = 'gold' }: Prop) {
         position: 'absolute',
         top: 0,
         right: 0,
-        width: 50,
-        height: 50,
+        width: 40,
+        height: 40,
         display: 'flex',
         justifyContent: 'center',
       }}>

@@ -57,3 +57,21 @@ $tabletWidth: 940px;
 .cds--modal.hasDropdown .cds--modal-content {
   overflow-y: visible !important;
 }
+
+.TwoColumnsDesktop {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1rem;
+
+  .cds--date-picker-container,
+  .cds--date-picker-input__wrapper,
+  .cds--date-picker,
+  .cds--date-picker input {
+    width: 100% !important;
+  }
+
+  @include phone {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+}

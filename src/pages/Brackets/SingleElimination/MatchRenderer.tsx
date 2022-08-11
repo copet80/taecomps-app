@@ -51,10 +51,10 @@ export default function MatchRenderer(renderProps: any) {
             display: 'flex',
             alignItems: 'center',
             padding: '8px 0',
-            height: '30px',
-            fontSize: '0.85srem',
+            height: '25px',
+            fontSize: '0.8rem',
           }}>
-          {topText}
+          {topText}*
         </div>
       )}
       {!(match.state === MatchState.WalkOver && bottomWon) && (
@@ -76,11 +76,11 @@ export default function MatchRenderer(renderProps: any) {
             color: topWon ? colors.white : 'inherit',
             border: `1px solid ${topWon ? topColor : colors.gray40}`,
             padding: '8px',
-            height: '50px',
+            height: '45px',
           }}>
           <div
             style={{
-              fontSize: '1rem',
+              fontSize: '0.9rem',
               fontWeight: topWon ? 'bold' : 'inherit',
             }}>
             {topParty.name}
@@ -111,11 +111,11 @@ export default function MatchRenderer(renderProps: any) {
             border: `1px solid ${bottomWon ? bottomColor : colors.gray40}`,
             borderTop: 0,
             padding: '8px',
-            height: '50px',
+            height: '45px',
           }}>
           <div
             style={{
-              fontSize: '1rem',
+              fontSize: '0.9rem',
               fontWeight: bottomWon ? 'bold' : 'inherit',
             }}>
             {bottomParty.name}
@@ -135,9 +135,9 @@ export default function MatchRenderer(renderProps: any) {
             display: 'flex',
             alignItems: 'center',
             padding: '8px 0',
-            height: '30px',
+            height: '25px',
             fontWeight: 'bold',
-            fontSize: '1rem',
+            fontSize: '0.95rem',
           }}>
           {bottomText}
         </div>

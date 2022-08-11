@@ -300,7 +300,7 @@ function EditTournamentDialog({
                   </ContentSwitcher>
                 </Stack>
                 {dateMode !== DateMode.None && (
-                  <Stack gap={6} orientation="horizontal">
+                  <div className="TwoColumnsDesktop">
                     {useStartDate && (
                       <DatePicker
                         allowInput={false}
@@ -341,7 +341,7 @@ function EditTournamentDialog({
                         />
                       </DatePicker>
                     )}
-                  </Stack>
+                  </div>
                 )}
                 {renderNotifications()}
               </Stack>

@@ -1,0 +1,27 @@
+@import '../../../styles/App.scss';
+
+.EntryTable {
+  th {
+    &.align-center button > .cds--table-sort__flex {
+      justify-content: center;
+    }
+    &.align-right button > .cds--table-sort__flex {
+      justify-content: flex-end;
+    }
+  }
+
+  td {
+    &.align-center,
+    &.align-right {
+      padding-right: 2.2rem;
+    }
+  }
+
+  .gender-male {
+    color: $blue-60;
+  }
+
+  .gender-female {
+    color: $red-60;
+  }
+}

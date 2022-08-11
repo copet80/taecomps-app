@@ -26,6 +26,7 @@ function createNewEntry(tournamentId: string): Entry {
     tournamentId,
     name: '',
     age: ENTRY_AGE_MIN,
+    gender: '',
     weight: ENTRY_WEIGHT_MIN,
     belt: '',
     club: '',

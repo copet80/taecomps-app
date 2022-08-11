@@ -17,6 +17,13 @@ import {
   TableToolbarContent,
   TableToolbarSearch,
 } from '@carbon/react';
+import {
+  GenderMale as GenderMaleIcon,
+  GenderFemale as GenderFemaleIcon,
+} from '@carbon/icons-react';
+import cx from 'classnames';
+
+import './EntryTable.scss';
 
 import { Entry, PaginationChangeParams, TableHeaderData } from '../../../types';
 import { formatDateTime } from '../../../utils';
@@ -50,10 +57,20 @@ const headers: TableHeaderData[] = [
     header: 'Weight',
   },
   {
+    key: 'gender',
+    header: 'Gender',
+  },
+  {
     key: 'createdAt',
     header: 'Entry date',
   },
 ];
+
+const cellAlignments: Record<string, string> = {
+  age: 'right',
+  gender: 'center',
+  weight: 'right',
+};
 
 function EntryTable({
   entries,
@@ -93,8 +110,26 @@ function EntryTable({
     setPagination(params);
   }
 
+  function renderCellValue(cell: any) {
+    if (cell.info.header === 'createdAt') {
+      return formatDateTime(cell.value);
+    }
+    if (cell.info.header === 'gender') {
+      if (cell.value === 'Male') {
+        return <GenderMaleIcon aria-label="Male" className="gender-male" />;
+      }
+      if (cell.value === 'Female') {
+        return (
+          <GenderFemaleIcon aria-label="Female" className="gender-female" />
+        );
+      }
+      return '--';
+    }
+    return cell.value;
+  }
+
   return (
-    <>
+    <div className="EntryTable">
       <DataTable rows={rows} headers={headers} isSortable>
         {({
           rows,
@@ -123,7 +158,8 @@ function EntryTable({
                   {headers.map((header: TableHeaderData) => (
                     <TableHeader
                       key={header.key}
-                      {...getHeaderProps({ header })}>
+                      {...getHeaderProps({ header })}
+                      className={cx(`align-${cellAlignments[header.key]}`)}>
                       {header.header}
                     </TableHeader>
                   ))}
@@ -134,10 +170,13 @@ function EntryTable({
                 {rows.map((row: any) => (
                   <TableRow key={row.id} {...getRowProps({ row })}>
                     {row.cells.map((cell: any) => (
-                      <TableCell key={cell.id}>
-                        {cell.info.header === 'createdAt'
-                          ? formatDateTime(cell.value)
-                          : cell.value}
+                      <TableCell
+                        key={cell.id}
+                        align={cellAlignments[cell.info.header]}
+                        className={cx(
+                          `align-${cellAlignments[cell.info.header]}`,
+                        )}>
+                        {renderCellValue(cell)}
                       </TableCell>
                     ))}
                     <TableCell className="cds--table-column-menu">
@@ -176,7 +215,7 @@ function EntryTable({
           onChange={handlePaginationChange}
         />
       )}
-    </>
+    </div>
   );
 }
 
