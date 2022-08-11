@@ -1,14 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import AppRoutes from '../../AppRoutes';
+import React, { useEffect, useMemo, useState } from 'react';
 
+import { Accordion, AccordionItem } from '@carbon/react';
+import { useNavigate } from 'react-router-dom';
+
+import AppRoutes from '../../AppRoutes';
 import {
   EmptyState,
   FullScreenContainer,
   FullScreenSpinner,
 } from '../../components';
 import { useApi, useStore } from '../../hooks';
-import TournamentBracket from './SingleElimination/SingleElimination';
+import { Division } from '../../types';
+
+import SingleElimination from './SingleElimination';
+import { createDivisionsFromEntries } from './Brackets.utils';
+import DivisionTitle from './DivisionTitle';
 
 enum Mode {
   Loading,
@@ -16,7 +22,7 @@ enum Mode {
   DeleteBracket,
 }
 
-export default function Bracket() {
+export default function Brackets() {
   const navigate = useNavigate();
   const { currentTournament } = useStore();
   const { entriesByTournamentId, listEntries } = useApi();
@@ -46,6 +52,11 @@ export default function Bracket() {
 
   const entries = entriesByTournamentId[currentTournament.id];
 
+  const divisions: Division[] = useMemo(
+    () => createDivisionsFromEntries(entries),
+    [entries],
+  );
+
   if (mode === Mode.Loading || !entries) {
     return <FullScreenSpinner />;
   }
@@ -72,14 +83,29 @@ export default function Bracket() {
     }
 
     return (
-      <TournamentBracket tournament={currentTournament} entries={entries} />
+      <Accordion>
+        {divisions.map((division) => {
+          return (
+            <AccordionItem
+              key={division.id}
+              title={<DivisionTitle division={division} />}>
+              <SingleElimination
+                tournament={currentTournament}
+                entries={entries}
+              />
+            </AccordionItem>
+          );
+        })}
+      </Accordion>
     );
   }
 
   return (
     <FullScreenContainer>
       <div className="PageContainer BracketContainer">
-        {entries.length === 0 ? renderEmptyState() : renderBracket()}
+        <section>
+          {entries.length === 0 ? renderEmptyState() : renderBracket()}
+        </section>
       </div>
     </FullScreenContainer>
   );

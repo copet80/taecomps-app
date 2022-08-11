@@ -17,10 +17,6 @@ import {
   TableToolbarContent,
   TableToolbarSearch,
 } from '@carbon/react';
-import {
-  GenderMale as GenderMaleIcon,
-  GenderFemale as GenderFemaleIcon,
-} from '@carbon/icons-react';
 import cx from 'classnames';
 
 import './EntryTable.scss';
@@ -28,11 +24,11 @@ import './EntryTable.scss';
 import {
   Entry,
   PaginationChangeParams,
-  SortDirection,
   SortInfo,
   TableHeaderData,
 } from '../../../types';
 import { createSortEntry, formatDateTime } from '../../../utils';
+import { GenderIcon } from '../../../components';
 
 type Props = {
   entries: Entry[];
@@ -133,13 +129,8 @@ function EntryTable({
       return formatDateTime(cell.value);
     }
     if (cell.info.header === 'gender') {
-      if (cell.value === 'Male') {
-        return <GenderMaleIcon aria-label="Male" className="gender-male" />;
-      }
-      if (cell.value === 'Female') {
-        return (
-          <GenderFemaleIcon aria-label="Female" className="gender-female" />
-        );
+      if (cell.value === 'Male' || cell.value === 'Female') {
+        return <GenderIcon gender={cell.value} />;
       }
       return '--';
     }

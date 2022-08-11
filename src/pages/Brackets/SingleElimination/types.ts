@@ -16,12 +16,3 @@ export interface MatchData {
   state: string;
   participants: ParticipantData[];
 }
-
-export interface DivisionData {
-  id: string;
-  belt: string;
-  minAge: number;
-  gender: string;
-}
-
-export function createMatchData() {}

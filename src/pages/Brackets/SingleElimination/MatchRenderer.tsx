@@ -2,6 +2,7 @@ import React from 'react';
 
 import * as colors from '../../../styles/AppColors';
 import { MatchState } from '../../../utils';
+
 import Medal from './Medal';
 
 export default function MatchRenderer(renderProps: any) {

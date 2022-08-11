@@ -9,6 +9,7 @@ import {
   ArchiveTournamentDialog,
   DeleteTournamentDialog,
   EditTournamentDialog,
+  ErrorBoundary,
   FullScreenSpinner,
   LoggedInWrapper,
   UnarchiveTournamentDialog,
@@ -139,21 +140,41 @@ export default function App() {
               <Route
                 path={AppRoutes.Dashboard}
                 element={
-                  <DashboardPage
-                    onEditCurrentTournamentClick={() =>
-                      setDialogMode(DialogMode.EditTournament)
-                    }
-                    onDeleteCurrentTournamentClick={() =>
-                      setDialogMode(DialogMode.DeleteTournament)
-                    }
-                  />
+                  <ErrorBoundary>
+                    <DashboardPage
+                      onEditCurrentTournamentClick={() =>
+                        setDialogMode(DialogMode.EditTournament)
+                      }
+                      onDeleteCurrentTournamentClick={() =>
+                        setDialogMode(DialogMode.DeleteTournament)
+                      }
+                    />
+                  </ErrorBoundary>
                 }
               />
-              <Route path={AppRoutes.Bracket} element={<BracketPage />} />
-              <Route path={AppRoutes.Entries} element={<EntriesPage />} />
+              <Route
+                path={AppRoutes.Bracket}
+                element={
+                  <ErrorBoundary>
+                    <BracketPage />
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path={AppRoutes.Entries}
+                element={
+                  <ErrorBoundary>
+                    <EntriesPage />
+                  </ErrorBoundary>
+                }
+              />
               <Route
                 path={AppRoutes.Profile}
-                element={<ProfilePage onLogoutClick={handleLogoutClick} />}
+                element={
+                  <ErrorBoundary>
+                    <ProfilePage onLogoutClick={handleLogoutClick} />
+                  </ErrorBoundary>
+                }
               />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
@@ -192,27 +213,32 @@ export default function App() {
     case AuthState.NotLoggedIn:
     default:
       return (
-        <Routes>
-          <Route
-            path={AppRoutes.Login}
-            element={
-              <LoginPage
-                onLoginSuccess={handleLoginSuccess}
-                onRegisterClick={handleRegisterClick}
-              />
-            }
-          />
-          <Route
-            path={AppRoutes.Register}
-            element={
-              <RegisterPage
-                onRegisterSuccess={handleRegisterSuccess}
-                onLoginClick={handleLoginClick}
-              />
-            }
-          />
-          <Route path="*" element={<Navigate to={AppRoutes.Login} replace />} />
-        </Routes>
+        <ErrorBoundary>
+          <Routes>
+            <Route
+              path={AppRoutes.Login}
+              element={
+                <LoginPage
+                  onLoginSuccess={handleLoginSuccess}
+                  onRegisterClick={handleRegisterClick}
+                />
+              }
+            />
+            <Route
+              path={AppRoutes.Register}
+              element={
+                <RegisterPage
+                  onRegisterSuccess={handleRegisterSuccess}
+                  onLoginClick={handleLoginClick}
+                />
+              }
+            />
+            <Route
+              path="*"
+              element={<Navigate to={AppRoutes.Login} replace />}
+            />
+          </Routes>
+        </ErrorBoundary>
       );
   }
 }

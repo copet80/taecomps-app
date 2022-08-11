@@ -46,9 +46,16 @@ export type NewEntry = Pick<
 
 export type Division = {
   id: string;
-  name: string;
+  belt: string;
+  minAge: number;
+  maxAge: number;
   minWeight: number;
   maxWeight: number;
+  gender: Gender;
+  numRounds?: number;
+  duration?: number;
+  entries?: Entry[];
+  entryIds: string[];
 };
 
 export type ListTournamentsFn = () => Unsubscribe;

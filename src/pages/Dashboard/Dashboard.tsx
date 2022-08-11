@@ -41,7 +41,6 @@ export default function Dashboard({
     <FullScreenContainer>
       <div className="PageContainer DashboardContainer">
         <Stack gap={6}>
-          <h2>Dashboard</h2>
           <section className="primary">
             <TournamentTile
               tournament={currentTournament}

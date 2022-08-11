@@ -2,7 +2,7 @@ import React from 'react';
 
 type Color = 'gold' | 'silver' | 'bronze';
 
-type Prop = {
+type Props = {
   color: Color;
 };
 
@@ -32,7 +32,7 @@ const sizes: Sizes = {
   bronze: 30,
 };
 
-export default function Medal({ color = 'gold' }: Prop) {
+export default function Medal({ color = 'gold' }: Props) {
   return (
     <div
       className="Medal"

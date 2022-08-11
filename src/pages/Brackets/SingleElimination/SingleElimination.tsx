@@ -12,6 +12,7 @@ import './SingleElimination.scss';
 import * as colors from '../../../styles/AppColors';
 import { Entry, Tournament } from '../../../types';
 import { useWindowSize } from '../../../hooks';
+
 import MatchRenderer from './MatchRenderer';
 
 type Props = {
@@ -19,7 +20,7 @@ type Props = {
   entries: Entry[];
 };
 
-function TournamentBracket({ tournament, entries }: Props) {
+function SingleElimination({ tournament, entries }: Props) {
   const matches = useMemo(() => [], [entries]);
   const size = useWindowSize();
 
@@ -32,7 +33,11 @@ function TournamentBracket({ tournament, entries }: Props) {
         onPartyClick={console.log}
         options={{
           style: {
-            roundHeader: { backgroundColor: '#AAA', height: 0 },
+            roundHeader: {
+              backgroundColor: '#AAA',
+              height: 0,
+              marginBottom: -20,
+            },
             connectorColor: colors.gray40,
             connectorColorHighlight: colors.black,
             boxHeight: 130,
@@ -47,7 +52,7 @@ function TournamentBracket({ tournament, entries }: Props) {
             maxScaleFactor={1}
             scaleFactorOnWheel={0.1}
             disableDoubleClickZoomWithToolAuto
-            miniatureProps={{ width: 0, height: 0 }}>
+            miniatureProps={{ position: 'none' }}>
             {children}
           </SVGViewer>
         )}
@@ -56,4 +61,4 @@ function TournamentBracket({ tournament, entries }: Props) {
   );
 }
 
-export default memo(TournamentBracket);
+export default memo(SingleElimination);

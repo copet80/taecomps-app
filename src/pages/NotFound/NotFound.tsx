@@ -3,8 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import AppRoutes from '../../AppRoutes';
-import { EmptyState } from '../../components';
-import { EmptyStateImage } from '../../components/EmptyState/EmptyState';
+import { EmptyState, EmptyStateImage } from '../../components';
 
 export default function NotFound() {
   const navigate = useNavigate();
