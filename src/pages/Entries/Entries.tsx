@@ -11,7 +11,7 @@ import {
 } from '../../components';
 import { useApi, useStore } from '../../hooks';
 import { Entry } from '../../types';
-import { ENTRY_AGE_MIN, ENTRY_WEIGHT_MIN, sortEntryByName } from '../../utils';
+import { ENTRY_AGE_MIN, ENTRY_WEIGHT_MIN } from '../../utils';
 import EntryTable from './EntryTable';
 
 enum Mode {
@@ -107,7 +107,7 @@ export default function Entries() {
   function renderTable() {
     return (
       <EntryTable
-        entries={entries.sort(sortEntryByName)}
+        entries={entries}
         onCreateClick={handleCreateEntryClick}
         onEditClick={handleEditEntryClick}
         onDeleteClick={handleDeleteEntryClick}

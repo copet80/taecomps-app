@@ -25,8 +25,14 @@ import cx from 'classnames';
 
 import './EntryTable.scss';
 
-import { Entry, PaginationChangeParams, TableHeaderData } from '../../../types';
-import { formatDateTime } from '../../../utils';
+import {
+  Entry,
+  PaginationChangeParams,
+  SortDirection,
+  SortInfo,
+  TableHeaderData,
+} from '../../../types';
+import { createSortEntry, formatDateTime } from '../../../utils';
 
 type Props = {
   entries: Entry[];
@@ -79,6 +85,10 @@ function EntryTable({
   onDeleteClick,
 }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortInfo, setSortInfo] = useState<SortInfo>({
+    headerKey: 'name',
+    sortDirection: 'ASC',
+  });
   const [pagination, setPagination] = useState<PaginationChangeParams>({
     page: 1,
     pageSize: 10,
@@ -90,10 +100,10 @@ function EntryTable({
   );
 
   const filteredEntries = useMemo(() => {
-    return entries.filter((entry) =>
-      entry.name.toLowerCase().includes(searchQuery),
-    );
-  }, [entries, searchQuery]);
+    return entries
+      .filter((entry) => entry.name.toLowerCase().includes(searchQuery))
+      .sort(createSortEntry(sortInfo));
+  }, [entries, searchQuery, sortInfo]);
 
   const rows = useMemo(() => {
     const { page, pageSize } = pagination;
@@ -108,6 +118,14 @@ function EntryTable({
 
   function handlePaginationChange(params: PaginationChangeParams) {
     setPagination(params);
+  }
+
+  function handleChangeSort(headerKey: string) {
+    const { sortDirection } = sortInfo;
+    const oppositeSortDirection = sortDirection === 'ASC' ? 'DESC' : 'ASC';
+    const newSortDirection =
+      headerKey === sortInfo.headerKey ? oppositeSortDirection : sortDirection;
+    setSortInfo({ headerKey, sortDirection: newSortDirection });
   }
 
   function renderCellValue(cell: any) {
@@ -155,14 +173,19 @@ function EntryTable({
             <Table {...getTableProps()}>
               <TableHead>
                 <TableRow>
-                  {headers.map((header: TableHeaderData) => (
-                    <TableHeader
-                      key={header.key}
-                      {...getHeaderProps({ header })}
-                      className={cx(`align-${cellAlignments[header.key]}`)}>
-                      {header.header}
-                    </TableHeader>
-                  ))}
+                  {headers.map((header: TableHeaderData) => {
+                    return (
+                      <TableHeader
+                        key={header.key}
+                        {...getHeaderProps({ header })}
+                        className={cx(`align-${cellAlignments[header.key]}`)}
+                        isSortHeader={sortInfo.headerKey === header.key}
+                        sortDirection={sortInfo.sortDirection}
+                        onClick={() => handleChangeSort(header.key)}>
+                        {header.header}
+                      </TableHeader>
+                    );
+                  })}
                   <TableHeader />
                 </TableRow>
               </TableHead>
