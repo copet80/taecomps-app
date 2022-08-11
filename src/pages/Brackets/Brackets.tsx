@@ -8,7 +8,7 @@ import {
   FullScreenSpinner,
 } from '../../components';
 import { useApi, useStore } from '../../hooks';
-import TournamentBracket from './SingleEliminationBracket/SingleEliminationBracket';
+import TournamentBracket from './SingleElimination/SingleElimination';
 
 enum Mode {
   Loading,
