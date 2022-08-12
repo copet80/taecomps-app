@@ -1,6 +1,10 @@
+import { Match } from '@g-loot/react-tournament-brackets/dist/src/types';
+import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
 
-import { Division, Entry } from '../../types';
+import { Division, Entry, Tournament } from '../../types';
+import { IDLE_SECONDS_BETWEEN_MATCHES, MatchState } from '../../utils';
+import { MatchData } from './types';
 
 type EntriesBoundaries = {
   lowestAge: number;
@@ -213,6 +217,8 @@ function combineBeltWeightWithAgeDivisions(
             maxWeight: d.maxWeight,
             minAge: a.minAge,
             maxAge: a.maxAge,
+            duration: 90,
+            numRounds: 2,
             entries: [],
             entryIds: [],
           };
@@ -253,4 +259,113 @@ export function createDivisionsFromEntries(entries: Entry[]): Division[] {
   );
 
   return divisions;
+}
+
+function createNextMatches(matches: MatchData[]): MatchData[] {
+  const result: MatchData[] = [...matches];
+
+  const prevMatchesById: Record<number, number[]> = {};
+  let nextMatch: MatchData | null = null;
+
+  result
+    .filter((match) => !match.nextMatchId)
+    .forEach((match) => {
+      if (!nextMatch) {
+        nextMatch = {
+          id: result.length,
+          name: '',
+          nextMatchId: null,
+          tournamentRoundText: '1',
+          startTime: '',
+          state: MatchState.Scheduled,
+          participants: [],
+        };
+        prevMatchesById[nextMatch.id] = [];
+        result.push(nextMatch);
+      }
+      if (prevMatchesById[nextMatch.id].length < 2) {
+        match.nextMatchId = nextMatch.id;
+        prevMatchesById[nextMatch.id].push(match.id);
+      }
+      if (prevMatchesById[nextMatch.id].length >= 2) {
+        nextMatch = null;
+      }
+    });
+
+  if (result.filter((match) => !match.nextMatchId).length > 1) {
+    return createNextMatches(result);
+  }
+
+  return result;
+}
+
+export function createDivisionMatches(division: Division): MatchData[] {
+  let matches: MatchData[] = [];
+  const { entries } = division;
+  const matchesById: Record<number, MatchData> = {};
+
+  let match: MatchData;
+
+  (entries || [])?.forEach((entry, index) => {
+    if (index % 2 === 0) {
+      match = {
+        id: matches.length,
+        name: '',
+        nextMatchId: null,
+        tournamentRoundText: '1',
+        startTime: '',
+        state: MatchState.Scheduled,
+        participants: [],
+      };
+      matchesById[match.id] = match;
+      matches.push(match);
+    }
+    match.participants.push({
+      id: uuid(),
+      resultText: null,
+      isWinner: false,
+      status: null,
+      name: entry.name,
+      club: entry.club,
+    });
+  });
+
+  if (matches.filter((match) => !match.nextMatchId).length > 1) {
+    return createNextMatches(matches);
+  }
+
+  return matches;
+}
+
+export function assignMatchesTimesAndOrder(
+  tournament: Tournament,
+  divisions: Division[],
+  matchesByDivisionId: Record<string, MatchData[]>,
+): Record<string, MatchData[]> {
+  const startMatchTime = DateTime.fromISO(tournament.startMatchTime || '09:30');
+
+  let counter = 0;
+  let timeInSeconds = 0;
+  let matches: MatchData[];
+
+  const totalMatchCount = divisions.reduce(
+    (sum, division) => sum + matchesByDivisionId[division.id].length,
+    0,
+  );
+  const totalMatchDigit = String(totalMatchCount).length;
+
+  divisions.forEach((division) => {
+    matches = matchesByDivisionId[division.id];
+    if (matches) {
+      matches.forEach((match) => {
+        timeInSeconds +=
+          division.numRounds * division.duration + IDLE_SECONDS_BETWEEN_MATCHES;
+        match.startTime = startMatchTime
+          .plus({ seconds: timeInSeconds })
+          .toLocaleString(DateTime.TIME_24_SIMPLE);
+        match.name = String(++counter).padStart(totalMatchDigit + 1, '0');
+      });
+    }
+  });
+  return matchesByDivisionId;
 }

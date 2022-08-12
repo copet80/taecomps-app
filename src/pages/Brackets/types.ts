@@ -4,12 +4,12 @@ export interface ParticipantData {
   isWinner: boolean;
   status: string | null;
   name: string;
-  club: 'Prodigy';
+  club: string;
 }
 
 export interface MatchData {
   id: number;
-  nextMatchId: number;
+  nextMatchId: number | null;
   name: string;
   tournamentRoundText: string;
   startTime: string;

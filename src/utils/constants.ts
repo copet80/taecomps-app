@@ -7,6 +7,7 @@ export const ENTRY_AGE_MIN = 1;
 export const ENTRY_AGE_MAX = 99;
 export const ENTRY_WEIGHT_MIN = 1;
 export const ENTRY_WEIGHT_MAX = 200;
+export const IDLE_SECONDS_BETWEEN_MATCHES = 5 * 60;
 
 export const MatchState = {
   Done: MATCH_STATES.DONE,

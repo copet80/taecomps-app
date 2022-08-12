@@ -89,7 +89,9 @@ export default function MatchRenderer(renderProps: any) {
           <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>
             {topParty.club}
           </div>
-          {!match.nextMatchId && <Medal color={topWon ? 'gold' : 'silver'} />}
+          {!match.nextMatchId && match.state === MatchState.Done && (
+            <Medal color={topWon ? 'gold' : 'silver'} />
+          )}
         </div>
       )}
       {!(match.state === MatchState.WalkOver && topWon) && (
@@ -124,7 +126,7 @@ export default function MatchRenderer(renderProps: any) {
           <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>
             {bottomParty.club}
           </div>
-          {!match.nextMatchId && (
+          {!match.nextMatchId && match.state === MatchState.Done && (
             <Medal color={bottomWon ? 'gold' : 'silver'} />
           )}
         </div>
@@ -135,10 +137,15 @@ export default function MatchRenderer(renderProps: any) {
           style={{
             display: 'flex',
             alignItems: 'center',
-            padding: '8px 0',
+            padding: '8px 6px',
             height: '25px',
             fontWeight: 'bold',
             fontSize: '0.95rem',
+            width: 'fit-content',
+            backgroundColor: colors.blue60,
+            color: colors.white,
+            borderBottomLeftRadius: '5px',
+            borderBottomRightRadius: '5px',
           }}>
           {bottomText}
         </div>

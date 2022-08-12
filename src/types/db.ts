@@ -13,6 +13,9 @@ export type Tournament = {
   belts?: string;
   startDate?: string;
   endDate?: string;
+  startMatchTime?: string;
+  startBreakTime?: string;
+  endBreakTime?: string;
   createdAt: string;
   modifiedAt?: string;
   isArchived?: boolean;
@@ -52,8 +55,8 @@ export type Division = {
   minWeight: number;
   maxWeight: number;
   gender: Gender;
-  numRounds?: number;
-  duration?: number;
+  numRounds: number;
+  duration: number;
   entries?: Entry[];
   entryIds: string[];
 };

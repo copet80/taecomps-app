@@ -194,7 +194,11 @@ function EntryTable({
                       </TableCell>
                     ))}
                     <TableCell className="cds--table-column-menu">
-                      <OverflowMenu size="sm" light flipped>
+                      <OverflowMenu
+                        ariaLabel="Entry table menu"
+                        size="sm"
+                        light
+                        flipped>
                         <OverflowMenuItem
                           itemText="Edit"
                           onClick={() => onEditClick(entriesById[row.id])}

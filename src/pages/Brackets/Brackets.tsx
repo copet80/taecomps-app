@@ -3,6 +3,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Accordion, AccordionItem } from '@carbon/react';
 import { useNavigate } from 'react-router-dom';
 
+import './Brackets.scss';
+
 import AppRoutes from '../../AppRoutes';
 import {
   EmptyState,
@@ -13,8 +15,13 @@ import { useApi, useStore } from '../../hooks';
 import { Division } from '../../types';
 
 import SingleElimination from './SingleElimination';
-import { createDivisionsFromEntries } from './Brackets.utils';
+import {
+  assignMatchesTimesAndOrder,
+  createDivisionMatches,
+  createDivisionsFromEntries,
+} from './Brackets.utils';
 import DivisionTitle from './DivisionTitle';
+import { MatchData } from './types';
 
 enum Mode {
   Loading,
@@ -57,6 +64,18 @@ export default function Brackets() {
     [entries],
   );
 
+  const matchesByDivisionId: Record<string, MatchData[]> = useMemo(
+    () =>
+      assignMatchesTimesAndOrder(
+        currentTournament,
+        divisions,
+        Object.fromEntries(
+          divisions.map((d) => [d.id, createDivisionMatches(d)]),
+        ),
+      ),
+    [divisions],
+  );
+
   if (mode === Mode.Loading || !entries) {
     return <FullScreenSpinner />;
   }
@@ -64,6 +83,8 @@ export default function Brackets() {
   function handleEmptyStateCtaClick() {
     navigate(AppRoutes.Entries);
   }
+
+  function handleEditDivisionClick(division: Division) {}
 
   function renderEmptyState() {
     return (
@@ -88,11 +109,13 @@ export default function Brackets() {
           return (
             <AccordionItem
               key={division.id}
-              title={<DivisionTitle division={division} />}>
-              <SingleElimination
-                tournament={currentTournament}
-                entries={entries}
-              />
+              title={
+                <DivisionTitle
+                  division={division}
+                  onEditClick={handleEditDivisionClick}
+                />
+              }>
+              <SingleElimination matches={matchesByDivisionId[division.id]} />
             </AccordionItem>
           );
         })}
@@ -102,7 +125,7 @@ export default function Brackets() {
 
   return (
     <FullScreenContainer>
-      <div className="PageContainer BracketContainer">
+      <div className="PageContainer BracketsContainer">
         <section>
           {entries.length === 0 ? renderEmptyState() : renderBracket()}
         </section>

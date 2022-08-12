@@ -10,37 +10,34 @@ import {
 import './SingleElimination.scss';
 
 import * as colors from '../../../styles/AppColors';
-import { Entry, Tournament } from '../../../types';
 import { useWindowSize } from '../../../hooks';
+import { MatchData } from '../types';
 
 import MatchRenderer from './MatchRenderer';
 
 type Props = {
-  tournament: Tournament;
-  entries: Entry[];
+  matches: MatchData[];
 };
 
-function SingleElimination({ tournament, entries }: Props) {
-  const matches = useMemo(() => [], [entries]);
+function SingleElimination({ matches }: Props) {
   const size = useWindowSize();
 
   return (
     <div className="SingleEliminationBracket">
       <SingleEliminationBracket
-        matches={sampleData}
+        matches={matches}
         matchComponent={MatchRenderer}
         onMatchClick={console.log}
         onPartyClick={console.log}
         options={{
           style: {
+            canvasPadding: 0,
             roundHeader: {
-              backgroundColor: '#AAA',
-              height: 0,
-              marginBottom: -20,
+              isShown: false,
             },
             connectorColor: colors.gray40,
             connectorColorHighlight: colors.black,
-            boxHeight: 130,
+            boxHeight: 140,
           },
         }}
         svgWrapper={({ children, ...props }) => (
@@ -48,6 +45,8 @@ function SingleElimination({ tournament, entries }: Props) {
             width={size.width}
             height={size.height}
             {...props}
+            detectWheel={false}
+            detectAutoPan={false}
             minScaleFactor={1}
             maxScaleFactor={1}
             scaleFactorOnWheel={0.1}
