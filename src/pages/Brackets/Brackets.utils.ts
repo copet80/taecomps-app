@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid';
 
 import { Division, Entry, Tournament } from '../../types';
 import { IDLE_SECONDS_BETWEEN_MATCHES, MatchState } from '../../utils';
+import { FilterCriteria } from './BracketFilters/BracketFilters';
 import { MatchData } from './types';
 
 type EntriesBoundaries = {
@@ -217,8 +218,8 @@ function combineBeltWeightWithAgeDivisions(
             maxWeight: d.maxWeight,
             minAge: a.minAge,
             maxAge: a.maxAge,
-            duration: 90,
-            numRounds: 2,
+            duration: e.belt === 'Black' || a.minAge >= 18 ? 90 : 60,
+            numRounds: 3,
             entries: [],
             entryIds: [],
           };
@@ -368,4 +369,44 @@ export function assignMatchesTimesAndOrder(
     }
   });
   return matchesByDivisionId;
+}
+
+export function filterDivisions(
+  divisions: Division[],
+  matchesByDivisionId: Record<string, MatchData[]>,
+  criteria: FilterCriteria | undefined,
+): Division[] {
+  if (criteria) {
+    const searchQuery = criteria.searchQuery.trim().toLowerCase();
+    const { belt, club } = criteria;
+
+    return divisions
+      .filter((division) => {
+        if (searchQuery && division.entries) {
+          if (!isNaN(parseInt(searchQuery))) {
+            const matches = matchesByDivisionId[division.id];
+            return matches.some((e) =>
+              e.name.toLowerCase().includes(searchQuery),
+            );
+          }
+          return division.entries.some((e) =>
+            e.name.toLowerCase().includes(searchQuery),
+          );
+        }
+        return true;
+      })
+      .filter((division) => {
+        if (belt) {
+          return division.belt === belt;
+        }
+        return true;
+      })
+      .filter((division) => {
+        if (club && division.entries) {
+          return division.entries.some((e) => e.club === club);
+        }
+        return true;
+      });
+  }
+  return divisions;
 }

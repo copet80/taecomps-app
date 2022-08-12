@@ -14,7 +14,16 @@ type Props = {
 };
 
 function DivisionTitle({ division, onEditClick }: Props) {
-  const { gender, belt, minAge, maxAge, minWeight, maxWeight } = division;
+  const {
+    gender,
+    belt,
+    minAge,
+    maxAge,
+    minWeight,
+    maxWeight,
+    numRounds,
+    duration,
+  } = division;
 
   function handleEditClick(event: Event) {
     console.log(event);
@@ -39,6 +48,10 @@ function DivisionTitle({ division, onEditClick }: Props) {
           <span className="secondDot">&#183;</span>
           <span>
             {minWeight}-{maxWeight}kg
+          </span>
+          <span className="thirdDot">&#183;</span>
+          <span className="numRounds">
+            {numRounds} rounds x {duration} secs
           </span>
         </div>
       </div>

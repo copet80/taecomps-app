@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { Accordion, AccordionItem } from '@carbon/react';
+import { Accordion, AccordionItem, Stack } from '@carbon/react';
 import { useNavigate } from 'react-router-dom';
 
 import './Brackets.scss';
@@ -19,9 +19,13 @@ import {
   assignMatchesTimesAndOrder,
   createDivisionMatches,
   createDivisionsFromEntries,
+  filterDivisions,
 } from './Brackets.utils';
 import DivisionTitle from './DivisionTitle';
 import { MatchData } from './types';
+import BracketFilters from './BracketFilters';
+import { FilterCriteria } from './BracketFilters/BracketFilters';
+import { getUniquePropertyValues } from '../../utils/array';
 
 enum Mode {
   Loading,
@@ -35,6 +39,9 @@ export default function Brackets() {
   const { entriesByTournamentId, listEntries } = useApi();
 
   const [mode, setMode] = useState<Mode | undefined>(Mode.Loading);
+  const [filterCriteria, setFilterCriteria] = useState<
+    FilterCriteria | undefined
+  >(undefined);
 
   useEffect(() => {
     fetchData();
@@ -59,6 +66,15 @@ export default function Brackets() {
 
   const entries = entriesByTournamentId[currentTournament.id];
 
+  const availableBelts: string[] = useMemo(
+    () => getUniquePropertyValues(entries, 'belt'),
+    [entries],
+  );
+  const availableClubs: string[] = useMemo(
+    () => getUniquePropertyValues(entries, 'club'),
+    [entries],
+  );
+
   const divisions: Division[] = useMemo(
     () => createDivisionsFromEntries(entries),
     [entries],
@@ -76,6 +92,11 @@ export default function Brackets() {
     [divisions],
   );
 
+  const filteredDivisions: Division[] = useMemo(
+    () => filterDivisions(divisions, matchesByDivisionId, filterCriteria),
+    [divisions, filterCriteria],
+  );
+
   if (mode === Mode.Loading || !entries) {
     return <FullScreenSpinner />;
   }
@@ -85,6 +106,10 @@ export default function Brackets() {
   }
 
   function handleEditDivisionClick(division: Division) {}
+
+  function handleFilterChange(criteria: FilterCriteria) {
+    setFilterCriteria(criteria);
+  }
 
   function renderEmptyState() {
     return (
@@ -104,22 +129,30 @@ export default function Brackets() {
     }
 
     return (
-      <Accordion>
-        {divisions.map((division) => {
-          return (
-            <AccordionItem
-              key={division.id}
-              title={
-                <DivisionTitle
-                  division={division}
-                  onEditClick={handleEditDivisionClick}
-                />
-              }>
-              <SingleElimination matches={matchesByDivisionId[division.id]} />
-            </AccordionItem>
-          );
-        })}
-      </Accordion>
+      <Stack gap={0}>
+        <BracketFilters
+          belts={availableBelts}
+          clubs={availableClubs}
+          onChange={handleFilterChange}
+        />
+        <Accordion>
+          {filteredDivisions.map((division) => {
+            return (
+              <AccordionItem
+                key={division.id}
+                open
+                title={
+                  <DivisionTitle
+                    division={division}
+                    onEditClick={handleEditDivisionClick}
+                  />
+                }>
+                <SingleElimination matches={matchesByDivisionId[division.id]} />
+              </AccordionItem>
+            );
+          })}
+        </Accordion>
+      </Stack>
     );
   }
 
