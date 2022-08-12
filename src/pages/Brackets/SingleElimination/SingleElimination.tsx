@@ -10,7 +10,6 @@ import {
 import './SingleElimination.scss';
 
 import * as colors from '../../../styles/AppColors';
-import { useWindowSize } from '../../../hooks';
 import { MatchData } from '../types';
 
 import MatchRenderer from './MatchRenderer';
@@ -20,8 +19,6 @@ type Props = {
 };
 
 function SingleElimination({ matches }: Props) {
-  const size = useWindowSize();
-
   return (
     <div className="SingleEliminationBracket">
       <SingleEliminationBracket
@@ -42,8 +39,8 @@ function SingleElimination({ matches }: Props) {
         }}
         svgWrapper={({ children, ...props }) => (
           <SVGViewer
-            width={size.width}
-            height={size.height}
+            width={5000}
+            height={5000}
             {...props}
             detectWheel={false}
             detectAutoPan={false}

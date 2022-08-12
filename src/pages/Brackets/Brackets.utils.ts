@@ -362,7 +362,7 @@ export function assignMatchesTimesAndOrder(
           division.numRounds * division.duration + IDLE_SECONDS_BETWEEN_MATCHES;
         match.startTime = startMatchTime
           .plus({ seconds: timeInSeconds })
-          .toLocaleString(DateTime.TIME_24_SIMPLE);
+          .toLocaleString(DateTime.TIME_SIMPLE);
         match.name = String(++counter).padStart(totalMatchDigit + 1, '0');
       });
     }

@@ -28,12 +28,19 @@ function DivisionTitle({ division, onEditClick }: Props) {
       <div className="DivisionTitle__info">
         <h5>
           <GenderIcon gender={gender} />
-          &nbsp;&nbsp;&nbsp;{gender}&nbsp;&nbsp;&nbsp;{minAge}-{maxAge}y
+          <span className="gender">{gender}</span>
+          <span className="age">
+            {minAge}-{maxAge}y
+          </span>
         </h5>
-        &#183;<span>{belt} Belt</span>&#183;
-        <span>
-          {minWeight}-{maxWeight}kg
-        </span>
+        <div className="DivisionTitle__secondaryInfo">
+          <span className="firstDot">&#183;</span>
+          <span>{belt} Belt</span>
+          <span className="secondDot">&#183;</span>
+          <span>
+            {minWeight}-{maxWeight}kg
+          </span>
+        </div>
       </div>
       <IconButton kind="ghost" label="Edit" onClick={handleEditClick}>
         <EditIcon />
