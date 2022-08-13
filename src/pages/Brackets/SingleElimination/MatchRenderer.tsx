@@ -44,6 +44,7 @@ export default function MatchRenderer(renderProps: any) {
         width: '100%',
         height: '100%',
         fontSize: '0.9rem',
+        borderRight: '3px solid transparent',
       }}>
       {topText && (
         <div
@@ -73,16 +74,20 @@ export default function MatchRenderer(renderProps: any) {
             gap: '4px',
             flexDirection: 'column',
             justifyContent: 'center',
-            backgroundColor: topColor,
+            backgroundColor: topParty?.id ? topColor : colors.gray20,
             color: topWon ? colors.white : 'inherit',
             border: `1px solid ${topWon ? topColor : colors.gray40}`,
+            borderTopLeftRadius:
+              match.state === MatchState.WalkOver ? '0' : '5px',
+            borderTopRightRadius:
+              match.state === MatchState.WalkOver ? '0' : '5px',
             padding: '8px',
             height: '45px',
           }}>
           <div
             style={{
               fontSize: '0.9rem',
-              fontWeight: topWon ? 'bold' : 'inherit',
+              fontWeight: bottomWon ? 'inherit' : 'bold',
             }}>
             {topParty.name}
           </div>
@@ -109,9 +114,11 @@ export default function MatchRenderer(renderProps: any) {
             gap: '4px',
             flexDirection: 'column',
             justifyContent: 'center',
-            backgroundColor: bottomColor,
+            backgroundColor: bottomParty?.id ? bottomColor : colors.gray20,
             color: bottomWon ? colors.white : 'inherit',
             border: `1px solid ${bottomWon ? bottomColor : colors.gray40}`,
+            borderBottomRightRadius:
+              match.state === MatchState.WalkOver ? '0' : '5px',
             borderTop: 0,
             padding: '8px',
             height: '45px',
@@ -119,7 +126,7 @@ export default function MatchRenderer(renderProps: any) {
           <div
             style={{
               fontSize: '0.9rem',
-              fontWeight: bottomWon ? 'bold' : 'inherit',
+              fontWeight: topWon ? 'inherit' : 'bold',
             }}>
             {bottomParty.name}
           </div>
