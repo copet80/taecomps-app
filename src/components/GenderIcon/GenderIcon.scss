@@ -1,0 +1,11 @@
+@import '../../styles/App.scss';
+
+.GenderIcon {
+  .gender-male {
+    color: $blue-60;
+  }
+
+  .gender-female {
+    color: $red-60;
+  }
+}

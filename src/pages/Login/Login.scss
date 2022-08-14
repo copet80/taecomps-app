@@ -1,0 +1,16 @@
+@import '../../styles/App.scss';
+
+.LoginContainer {
+  max-width: var(--maxwidth-container-small);
+  width: 100%;
+
+  .cds--modal-close {
+    display: none;
+  }
+
+  .cds--modal.is-visible .cds--modal-container {
+    @include desktop {
+      max-width: 500px;
+    }
+  }
+}

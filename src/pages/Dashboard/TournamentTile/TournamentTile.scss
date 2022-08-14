@@ -1,0 +1,45 @@
+@import '../../../styles/App.scss';
+
+.TournamentTile__AboveFold {
+  height: 300px;
+  display: grid;
+  grid-template-rows: auto max-content;
+
+  .closedTag > .cds--tag {
+    margin: 0 !important;
+  }
+
+  .tile__new {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tile__mainInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .tile__secondaryInfo {
+    color: $gray-60;
+
+    p {
+      font-size: 0.7rem;
+    }
+  }
+
+  .tile__action {
+    color: var(--cds-border-interactive, $blue-60);
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}
+
+.TournamentTile__BelowFold {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $gray-20;
+}

@@ -1,0 +1,79 @@
+@use 'node_modules/@carbon/styles/css/styles.min.css';
+
+@import './AppColors.scss';
+@import './AppTokens.scss';
+
+html,
+body,
+#root {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+a {
+  cursor: pointer;
+}
+
+.fullScreenBackground {
+  background: white url('../assets/img/taecomp-bg-blur.webp') center center
+    no-repeat;
+  background-size: cover;
+}
+
+$phoneWidth: 672px;
+$tabletWidth: 940px;
+
+@mixin phone {
+  @media (max-width: #{$phoneWidth - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$phoneWidth}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (max-width: #{$tabletWidth - 1px}) {
+    @content;
+  }
+}
+
+.PageContainer {
+  padding: var(--padding-pagecontainer-normal);
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.cds--content-switcher.disabled {
+  opacity: 0.25;
+}
+
+.cds--modal.hasDropdown .cds--modal-content {
+  overflow-y: visible !important;
+}
+
+.TwoColumnsDesktop {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1rem;
+
+  .cds--date-picker-container,
+  .cds--date-picker-input__wrapper,
+  .cds--date-picker,
+  .cds--date-picker input {
+    width: 100% !important;
+  }
+
+  @include phone {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+}

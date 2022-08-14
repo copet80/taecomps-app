@@ -1,0 +1,15 @@
+@import '../../styles/App.scss';
+
+.BracketsContainer {
+  .cds--accordion__heading {
+    display: flex;
+    align-items: center;
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+
+  .cds--accordion__content {
+    padding-top: 1rem;
+    padding-bottom: 0;
+  }
+}
