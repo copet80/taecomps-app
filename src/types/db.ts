@@ -59,6 +59,8 @@ export type Division = {
   duration: number;
   entries?: Entry[];
   entryIds: string[];
+  createdAt: string;
+  modifiedAt?: string;
 };
 
 export type ListTournamentsFn = () => Unsubscribe;

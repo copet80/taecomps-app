@@ -20,7 +20,7 @@ import {
   ENTRY_AGE_MAX,
   ENTRY_WEIGHT_MIN,
   ENTRY_WEIGHT_MAX,
-  normalizeDropdownChange,
+  normalizeNumberInputChange,
   sortOptionByLabel,
 } from '../../utils';
 import { number } from 'yup';
@@ -319,11 +319,11 @@ function EditEntryDialog({
                     min={ENTRY_AGE_MIN}
                     max={ENTRY_AGE_MAX}
                     label="Age"
-                    value={formValues.age}
+                    value={isNaN(formValues.age) ? '' : formValues.age}
                     disabled={isSubmitting}
                     iconDescription=""
                     invalidText={`Please enter between ${ENTRY_AGE_MIN} and ${ENTRY_AGE_MAX}`}
-                    onChange={normalizeDropdownChange((value: any) => {
+                    onChange={normalizeNumberInputChange((value: any) => {
                       updateFormValue('age', +value);
                     })}
                   />
@@ -332,11 +332,11 @@ function EditEntryDialog({
                     min={ENTRY_WEIGHT_MIN}
                     max={ENTRY_WEIGHT_MAX}
                     label="Weight (in kg)"
-                    value={formValues.weight}
+                    value={isNaN(formValues.weight) ? '' : formValues.weight}
                     disabled={isSubmitting}
                     iconDescription=""
                     invalidText={`Please enter between ${ENTRY_WEIGHT_MIN} and ${ENTRY_WEIGHT_MAX}`}
-                    onChange={normalizeDropdownChange((value: any) => {
+                    onChange={normalizeNumberInputChange((value: any) => {
                       updateFormValue('weight', +value);
                     })}
                   />

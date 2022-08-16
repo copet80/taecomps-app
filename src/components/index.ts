@@ -3,6 +3,7 @@ export { default as ArchiveTournamentDialog } from './ArchiveTournamentDialog';
 export { default as Box } from './Box';
 export { default as DeleteEntryDialog } from './DeleteEntryDialog';
 export { default as DeleteTournamentDialog } from './DeleteTournamentDialog';
+export { default as EditDivisionDialog } from './EditDivisionDialog';
 export { default as EditEntryDialog } from './EditEntryDialog';
 export { default as EditTournamentDialog } from './EditTournamentDialog';
 export { default as EmptyState, EmptyStateImage } from './EmptyState';

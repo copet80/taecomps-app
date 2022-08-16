@@ -7,6 +7,7 @@ import './Brackets.scss';
 
 import AppRoutes from '../../AppRoutes';
 import {
+  EditDivisionDialog,
   EmptyState,
   FullScreenContainer,
   FullScreenSpinner,
@@ -29,8 +30,7 @@ import { getUniquePropertyValues } from '../../utils/array';
 
 enum Mode {
   Loading,
-  EditBracket,
-  DeleteBracket,
+  EditDivision,
 }
 
 export default function Brackets() {
@@ -41,6 +41,9 @@ export default function Brackets() {
   const [mode, setMode] = useState<Mode | undefined>(Mode.Loading);
   const [filterCriteria, setFilterCriteria] = useState<
     FilterCriteria | undefined
+  >(undefined);
+  const [divisionToAction, setDivisionToAction] = useState<
+    Division | undefined
   >(undefined);
 
   useEffect(() => {
@@ -105,10 +108,23 @@ export default function Brackets() {
     navigate(AppRoutes.Entries);
   }
 
-  function handleEditDivisionClick(division: Division) {}
+  function handleEditDivisionClick(division: Division) {
+    setDivisionToAction(division);
+    setMode(Mode.EditDivision);
+  }
 
   function handleFilterChange(criteria: FilterCriteria) {
     setFilterCriteria(criteria);
+  }
+
+  function handleCancelEditDivision() {
+    setMode(undefined);
+    setDivisionToAction(undefined);
+  }
+
+  function handleSaveDivision(division: Division) {
+    setMode(undefined);
+    setDivisionToAction(undefined);
   }
 
   function renderEmptyState() {
@@ -163,6 +179,13 @@ export default function Brackets() {
           {entries.length === 0 ? renderEmptyState() : renderBracket()}
         </section>
       </div>
+      <EditDivisionDialog
+        isVisible={mode === Mode.EditDivision}
+        division={divisionToAction}
+        belts={currentTournament.belts || ''}
+        onCancelClick={handleCancelEditDivision}
+        onSaveClick={handleSaveDivision}
+      />
     </FullScreenContainer>
   );
 }

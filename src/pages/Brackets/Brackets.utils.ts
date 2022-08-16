@@ -222,6 +222,7 @@ function combineBeltWeightWithAgeDivisions(
             numRounds: 3,
             entries: [],
             entryIds: [],
+            createdAt: DateTime.now().toISO(),
           };
         }
         divisionsMap[key].entries?.push(e);

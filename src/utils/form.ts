@@ -7,7 +7,7 @@ export function formAction(f: Function) {
   };
 }
 
-export function normalizeDropdownChange(f: Function) {
+export function normalizeNumberInputChange(f: Function) {
   return (
     _: FormEvent<HTMLInputElement>,
     params: string | { value: string },
